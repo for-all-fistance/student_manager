@@ -33,7 +33,11 @@ private slots:
     void do_process_turn_back_request();
     void do_process_login_request();
 
-    void on_add_stu_clicked();
+    void on_add_stu_btn_clicked();
+
+    void on_find_stu_btn_clicked();
+
+    void on_del_stu_btn_clicked();
 
 private:
     Ui::MainWindow *ui;

@@ -44,7 +44,7 @@
      <rect>
       <x>10</x>
       <y>80</y>
-      <width>108</width>
+      <width>121</width>
       <height>151</height>
      </rect>
     </property>
@@ -53,16 +53,23 @@
     </property>
     <layout class="QGridLayout" name="gridLayout">
      <item row="0" column="0">
-      <widget class="QPushButton" name="add_stu">
+      <widget class="QPushButton" name="add_stu_btn">
        <property name="text">
-        <string>增加</string>
+        <string>新建学生</string>
        </property>
       </widget>
      </item>
      <item row="1" column="0">
-      <widget class="QPushButton" name="del_stu">
+      <widget class="QPushButton" name="del_stu_btn">
        <property name="text">
-        <string>删除</string>
+        <string>删除学生</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QPushButton" name="chag_stu_btn">
+       <property name="text">
+        <string>修改学生信息</string>
        </property>
       </widget>
      </item>

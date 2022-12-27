@@ -42,12 +42,10 @@ void MainWindow::init()
   * @retval
   */
 {
-    //显示登录界面
-    login.show();
-    //收到登陆成功信号,打开主界面
-    connect(&login,SIGNAL(send_login_success_signal()),this,SLOT(do_process_login_request()));
-    //如果点击返回学生信息页面的按钮，将打开主页面（学生信息页面）
-    connect(&lesson_manage,SIGNAL(send_turn2student_manage_signal()),this,SLOT(do_process_turn_back_request()));
+    login.show();//显示登录界面
+    connect(&login,SIGNAL(send_login_success_signal()),this,SLOT(do_process_login_request()));//收到登陆成功信号,打开主界面
+    connect(&lesson_manage,SIGNAL(send_turn2student_manage_signal()),this,SLOT(do_process_turn_back_request()));//如果点击返回学生信息页面的按钮，将打开主页面（学生信息页面）
+
     set_content();
 }
 
@@ -98,6 +96,7 @@ void MainWindow::set_content()
      ui->content->setColumnCount(col);     
      QStringList header({"姓名","学号","班级","优良程度"});
      ui->content->setHeaderLabels(header);
+     sql_server.read_all_student();
      for(int i=0;i<20;i++)//设置表格内容
      {
          QTreeWidgetItem* new_top_item = new QTreeWidgetItem(QStringList({"张三","1000","3","A"}));
@@ -136,8 +135,24 @@ void MainWindow::do_process_turn_back_request()
 /**
  * @brief MainWindow::on_add_stu_clicked
  */
-void MainWindow::on_add_stu_clicked()
+void MainWindow::on_add_stu_btn_clicked()
 {
     sql_server.add_student();
+}
+
+/**
+ * @brief MainWindow::on_find_stu_clicked 新建一个学生
+ */
+void MainWindow::on_find_stu_btn_clicked()
+{
+    sql_server.find_student(1);
+}
+
+/**
+ * @brief MainWindow::on_del_stu_clicked 删除一个学生
+ */
+void MainWindow::on_del_stu_btn_clicked()
+{
+
 }
 

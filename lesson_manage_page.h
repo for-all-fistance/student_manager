@@ -9,6 +9,7 @@
 #define LESSON_MANAGE_PAGE_H
 
 #include <QWidget>
+#include "ssql.h"
 
 namespace Ui {
 class lesson_manage_page;
@@ -28,6 +29,9 @@ private slots:
 
     void on_btn_exit_clicked();
 
+
+    void on_add_score_btn_clicked();
+
 signals:
     void send_turn2student_manage_signal();
 
@@ -35,6 +39,7 @@ private:
     Ui::lesson_manage_page *ui;
     void init();
     void set_content();
+    sSql sql_server;
 };
 
 #endif // LESSON_MANAGE_PAGE_H

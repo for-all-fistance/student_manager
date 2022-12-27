@@ -20,10 +20,18 @@ class add_student : public QWidget
 public:
     explicit add_student(QWidget *parent = nullptr);
     ~add_student();
-
+    QString get_name();
+    int get_id();
+    QString get_class();
 private slots:
-    void on_new_stud_clicked();
 
+    void on_new_stud_btn_clicked();
+
+    void on_cancel_clicked();
+
+signals:
+    void send_new_student_signal();
+    void send_cancel_signal();
 private:
     Ui::add_student *ui;
     int score_count=0;
