@@ -14,7 +14,6 @@ SOURCES += \
     add_score.cpp \
     add_student.cpp \
     lesson_manage_page.cpp \
-    login_fail_page.cpp \
     login_page.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -24,7 +23,6 @@ HEADERS += \
     add_score.h \
     add_student.h \
     lesson_manage_page.h \
-    login_fail_page.h \
     login_page.h \
     mainwindow.h \
     ssql.h
@@ -33,7 +31,6 @@ FORMS += \
     add_score.ui \
     add_student.ui \
     lesson_manage_page.ui \
-    login_fail_page.ui \
     login_page.ui \
     mainwindow.ui
 

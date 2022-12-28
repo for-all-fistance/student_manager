@@ -4,6 +4,8 @@
   * @brief   member function of class lesson_manage_page, which is created to manage the info of one lesson, including all the students and their info.
   *
 */
+#pragma execution_character_set("utf-8")
+
 #include "lesson_manage_page.h"
 #include "ui_lesson_manage_page.h"
 

@@ -27,10 +27,10 @@ private slots:
 
     void on_new_stud_btn_clicked();
 
-    void on_cancel_clicked();
+    void on_cancel_btn_clicked();
 
 signals:
-    void send_new_student_signal();
+    void send_new_student_signal(int stud_id,QString stu_name,QString _class);
     void send_cancel_signal();
 private:
     Ui::add_student *ui;

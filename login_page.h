@@ -8,7 +8,7 @@
 #ifndef LOGIN_PAGE_H
 #define LOGIN_PAGE_H
 
-#include "login_fail_page.h"
+#include "ssql.h"
 #include <QWidget>
 
 namespace Ui {
@@ -32,8 +32,9 @@ signals:
 
 private:
     Ui::login_page *ui;
-    login_fail_page login_fail;
     void init();
+    sSql sql_server;
+    bool try_login();
 };
 
 #endif // LOGIN_PAGE_H

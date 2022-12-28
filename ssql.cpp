@@ -4,7 +4,22 @@
   * @brief   member function of class ssql,including all the sql operations, such as  add, search...
   *
 */
+#pragma execution_character_set("utf-8")
+
 #include "ssql.h"
+
+
+/**
+ * @brief size 获得一个QSqlQuery中数据的条数
+ * @param q query to search
+ * @return
+ */
+int size(QSqlQuery q)
+{
+    q.last();
+    int col=q.at()+1;
+    return col;
+}
 
 
 sSql::sSql(QObject *parent)
@@ -121,6 +136,8 @@ int sSql::find_lesson(QString lesson_name,QString year,QString term)
                            "year = :year "
                            "term = :term ");// sql语句字符串
     query.bindValue(":lesson_name", lesson_name);//使用 bindValue函数将占位符替换
+    query.bindValue(":year",year);
+    query.bindValue(":term",term);
     query.prepare(find);
     if(!query.exec())// 执行sql语句
     {
@@ -144,9 +161,9 @@ int sSql::find_lesson(QString lesson_name,QString year,QString term)
 bool sSql::add_student_base(int stud_id,QString stu_name,QString _class)
 {
     QSqlQuery query(mydb);// 用于执行sql语句的对象
-    query.prepare("INSERT INTO student_info VALUES (:stu_name,:stud_id,:class)");
+    query.prepare("INSERT INTO student_info (stu_name,stud_id,class) VALUES (:stu_name,:stud_id,:class)");
     query.bindValue(":stud_id", stud_id);
-    query.bindValue(":stud_name", stu_name);
+    query.bindValue(":stu_name", stu_name);
     query.bindValue(":class", _class);
     if(!query.exec())
     {
@@ -167,65 +184,148 @@ bool sSql::add_student_base(int stud_id,QString stu_name,QString _class)
  */
 bool sSql::add_student()
 {
-    class add_student new_student;
-    new_student.show();
-    /*while(!new_student.isHidden())//阻塞
-    {
-        QTime dieTime= QTime::currentTime().addMSecs(5);
-        while (QTime::currentTime() < dieTime)
-        QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
-    }
-    */
+    class add_student *new_student;
+    new_student=new class add_student;//创建界面对象
+    new_student->setWindowTitle("new student");//标题
+    new_student->show();
+    connect(new_student,SIGNAL(send_new_student_signal(int,QString,QString)),this,
+            SLOT(try_add_student(int,QString,QString)));//连接信号和槽函数
+    return true;
+}
 
-    return add_student_base(new_student.get_id(),new_student.get_name(),new_student.get_class());
+/**
+ * @brief sSql::try_add_student 处理信号
+ * @param stud_id
+ * @param stu_name
+ * @param _class
+ */
+void sSql::try_add_student(int stud_id,QString stu_name,QString _class)
+{
+    add_student_base(stud_id,stu_name,_class);
 }
 
 /**
  * @brief sSql::read_all_student
  * @return true if success.
  */
-bool sSql::read_all_student()
+bool sSql::read_all_student(QTreeWidget *content)
 {
-        QSqlQuery query(mydb);
-        //query.exec();
-        if(!query.exec("SELECT * FROM student_info"))
+    QSqlQuery query(mydb);// 用于执行sql语句的对象
+    query.prepare("SELECT * FROM student_info");
+    if(!query.exec())
+    {
+        qDebug() << "Error: Fail to query table. " << query.lastError();
+        return false;
+    }
+    else
+    {
+
+        int col=4;
+        content->setColumnCount(col);
+        QStringList header({"姓名","学号","班级","优良程度"});
+        content->setHeaderLabels(header);
+        while(query.next())
         {
-            qDebug() << "Error: Fail to query table. " << query.lastError();
-            return false;
-        }
-        else
-        {
-            while(query.next())
+            QString stud_id = query.value("stud_id").toString();
+            QString stud_name = query.value("stu_name").toString();
+            QString _class = query.value("class").toString();
+            QString performance=query.value("performance").toString();
+            qDebug()<<QString("id:%1    name:%2    class:%3   performance:%4").arg(stud_id).arg(stud_name).arg(_class).arg(performance);
+            QTreeWidgetItem* new_top_item = new QTreeWidgetItem(QStringList({stud_name,stud_id,_class,performance}));//创建层
+            content->addTopLevelItem(new_top_item);//添加层
+
+            QSqlQuery query1(mydb);//开始创建带有学生成绩的子节点
+            query1.prepare("SELECT * FROM grade WHERE stud_id = :stud_id");
+            query1.bindValue(":stud_id",stud_id);
+            query1.exec();
+            while(query1.next())
             {
-                int stud_id = query.value(0).toInt();
-                QString stud_name = query.value(1).toString();
-                QString _class = query.value(2).toString();
-                qDebug()<<QString("id:%1    name:%2    class:%3").arg(stud_id).arg(stud_name).arg(_class);
+                QString lesson_name=query1.value("lesson_name").toString();
+                QString grade=query1.value("grade").toString();
+                QTreeWidgetItem* sec_child_item = new QTreeWidgetItem(QStringList{lesson_name,grade});//创建子节点
+                new_top_item->addChild(sec_child_item);    //将子节点添加到顶层节点上
             }
-            return true;
         }
+        content->update();
+        return true;
+    }
 }
 
+/**
+ * @brief sSql::search_for_student
+ * @param stu_name
+ * @param widget_to_show
+ * @return
+ */
+bool sSql::search_for_student(QString stu_name,QTreeWidget *widget_to_show)
+{
+    widget_to_show->clear();
+    QSqlQuery query(mydb);// 用于执行sql语句的对象
+    query.prepare("SELECT * FROM student_info WHERE stu_name = :stu_name");//要执行的sql语句
+    query.bindValue(":stu_name",stu_name);
+    if(!query.exec())
+    {
+        qDebug() << "Error: fail to find student. " << query.lastError();
+        return false;
+    }
+    else
+    {
+        int col =4;
+        widget_to_show->setColumnCount(col);
+        while(query.next())
+        {
+            QString stud_id = query.value("stud_id").toString();
+            QString stud_name = query.value("stu_name").toString();
+            QString _class = query.value("class").toString();
+            QString performance=query.value("performance").toString();
+            QTreeWidgetItem* new_top_item = new QTreeWidgetItem(QStringList({stud_name,stud_id,_class,performance}));//创建层
+            widget_to_show->addTopLevelItem(new_top_item);//添加层
+            qDebug()<<QString("id:%1    name:%2    class:%3   performance:%4").arg(stud_id).arg(stud_name).arg(_class).arg(performance);
+            QSqlQuery query1(mydb);//创建带有学生成绩的子节点
+            query1.prepare("SELECT * FROM grade WHERE stud_id = :stud_id");
+            query1.bindValue(":stud_id",stud_id);
+            query1.exec();
+            while(query1.next())
+            {
+                QString lesson_name=query1.value("lesson_name").toString();
+                QString grade=query1.value("grade").toString();
+                QTreeWidgetItem* sec_child_item = new QTreeWidgetItem(QStringList{lesson_name,grade});//创建子节点
+                new_top_item->addChild(sec_child_item);    //将子节点添加到顶层节点上
+            }
+        }
+        widget_to_show->update();
+        return true;
+    }
+}
 /**
  * @brief sSql::add_grade
  * @return
  */
 bool sSql::add_grade()
 {
-    class add_score new_score;
-    new_score.show();
-    while(!new_score.isHidden())//阻塞
-    {
-        QTime dieTime= QTime::currentTime().addMSecs(5);
-        while (QTime::currentTime() < dieTime)
-        QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
-    }
-    int stu_id=find_student(new_score.get_lesson_name());
-    int lesson_id=find_lesson(new_score.get_lesson_name(),new_score.get_year(),new_score.get_term());
-    return add_garde_base(stu_id,lesson_id,new_score.get_score());
+    class add_score *new_score;
+    new_score=new class add_score;//创建界面对象
+    new_score->setWindowTitle("new grade");//标题
+    new_score->show();
+    connect(new_score,SIGNAL(send_new_student_signal(QString,QString,QString,QString,float)),this,
+            SLOT(try_add_grade(QString,QString,QString,QString,float)));//连接信号和槽函数
+    return true;
 }
 
-
+/**
+ * @brief sSql::try_add_grade 处理信号
+ * @param stu_name
+ * @param lesson_name
+ * @param year
+ * @param term
+ * @param grade
+ */
+void sSql::try_add_grade(QString stu_name,QString lesson_name,QString year,QString term,float grade)
+{
+    int stu_id=find_student(stu_name);
+    int lesson_id=find_lesson(lesson_name,year,term);
+    add_garde_base(stu_id,lesson_id,grade);
+}
 /**
  * @brief sSql::add_garde_base
  * @param stu_id
@@ -253,3 +353,53 @@ bool sSql::add_garde_base(int stu_id,int lesson_id,float grade)
             return true;
     }
 }
+
+/**
+ * @brief sSql::check_passwd
+ * @param user_name
+ * @param passwd
+ * @return
+ */
+bool sSql::check_passwd(QString user_name,QString passwd)
+{
+    QSqlQuery query(mydb);// 用于执行sql语句的对象
+    query.prepare("SELECT * FROM users WHERE user_id = :user_id");
+    query.bindValue(":user_id",user_name);
+    query.exec();
+    int s=query.at();
+    query.next();
+    if(s==-2)//没有找到user
+    {
+        qDebug() << "Error: user not found" << query.lastError();
+        QMessageBox::critical(nullptr, QObject::tr("error"),
+                              QObject::tr("user not found\n"
+                                          "Click Cancel to exit."), QMessageBox::Cancel);
+        return false;
+    }
+    else if(passwd==query.value("passwd").toString())//找到user且密码正确
+    {
+        qDebug()<<"login success";
+        return true;
+    }
+    else//密码错误
+    {
+        QMessageBox::critical(nullptr, QObject::tr("error"),
+                              QObject::tr("password incorrect\n"
+                                          "Click Cancel to exit."), QMessageBox::Cancel);
+        return false;
+    }
+}
+
+bool sSql::delete_student()
+{
+    return true;
+}
+
+bool sSql::delete_grade()
+{
+    return true;
+}
+
+
+
+

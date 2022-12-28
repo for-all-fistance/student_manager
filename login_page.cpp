@@ -4,6 +4,8 @@
   * @brief   member function of class loogin_page, including all the login operation and login page UI
   *
 */
+#pragma execution_character_set("utf-8")
+
 #include "login_page.h"
 #include "ui_login_page.h"
 
@@ -48,15 +50,9 @@ void login_page::on_btn_login_clicked()
   */
 {
     //如果登录成功，发送成功信号
-    if(1)
+    if(try_login())
     {
         emit send_login_success_signal();
-    }
-    //如果登录失败，弹出失败界面
-    else
-    {
-        //this->hide();
-        login_fail.show();
     }
 }
 
@@ -70,3 +66,10 @@ void login_page::on_btn_quit_clicked()
     exit(0);
 }
 
+
+bool login_page::try_login()
+{
+    QString name=ui->login_username->text();
+    QString passwd=ui->login_passwd->text();
+    return sql_server.check_passwd(name,passwd);
+}
