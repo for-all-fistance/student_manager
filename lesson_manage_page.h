@@ -32,6 +32,8 @@ private slots:
 
     void on_add_score_btn_clicked();
 
+    void on_del_score_btn_clicked();
+
 signals:
     void send_turn2student_manage_signal();
 

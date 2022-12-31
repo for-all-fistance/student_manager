@@ -47,6 +47,12 @@ void MainWindow::init()
     login.show();//显示登录界面
     connect(&login,SIGNAL(send_login_success_signal()),this,SLOT(do_process_login_request()));//收到登陆成功信号,打开主界面
     connect(&lesson_manage,SIGNAL(send_turn2student_manage_signal()),this,SLOT(do_process_turn_back_request()));//如果点击返回学生信息页面的按钮，将打开主页面（学生信息页面）
+    connect(&sql_server,SIGNAL(send_student_deleted_signal()),this,SLOT(ui->content->update()));//当数据发生变化时，刷新页面
+    connect(&sql_server,SIGNAL(send_student_added_signal()),this,SLOT(ui->content->update()));
+    connect(&sql_server,SIGNAL(send_grade_added_signal()),this,SLOT(ui->content->update()));
+    connect(&sql_server,SIGNAL(send_grade_deleted_signal()),this,SLOT(ui->content->update()));
+    connect(&sql_server,SIGNAL(send_lesson_deleted_signal()),this,SLOT(ui->content->update()));
+    connect(&sql_server,SIGNAL(send_lesson_added_signal()),this,SLOT(ui->content->update()));
     set_content();
 }
 

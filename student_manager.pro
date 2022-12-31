@@ -13,6 +13,8 @@ CONFIG += c++17
 SOURCES += \
     add_score.cpp \
     add_student.cpp \
+    delete_grade.cpp \
+    delete_student.cpp \
     lesson_manage_page.cpp \
     login_page.cpp \
     main.cpp \
@@ -22,6 +24,8 @@ SOURCES += \
 HEADERS += \
     add_score.h \
     add_student.h \
+    delete_grade.h \
+    delete_student.h \
     lesson_manage_page.h \
     login_page.h \
     mainwindow.h \
@@ -30,6 +34,8 @@ HEADERS += \
 FORMS += \
     add_score.ui \
     add_student.ui \
+    delete_grade.ui \
+    delete_student.ui \
     lesson_manage_page.ui \
     login_page.ui \
     mainwindow.ui

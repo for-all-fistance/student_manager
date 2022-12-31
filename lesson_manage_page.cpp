@@ -108,3 +108,9 @@ void lesson_manage_page::on_add_score_btn_clicked()
     sql_server.add_grade();
 }
 
+
+void lesson_manage_page::on_del_score_btn_clicked()
+{
+    sql_server.delete_grade();
+}
+

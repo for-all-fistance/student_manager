@@ -122,11 +122,11 @@ QString sSql::find_lesson(int lesson_id)
 
 
 /**
- * @brief sSql::find_lesson 查找课程对应的课程ID
+ * @brief sSql::find_lesson 查找对应的课程ID
  * @param lesson_name 要查找的课程名称
  * @param year 要查找的课程学年
  * @param term 要查找的课程学期
- * @return 对应的课程名称
+ * @return 课程对应的课程ID，没有找到返回-1
  */
 int sSql::find_lesson(QString lesson_name,QString year,QString term)
 {
@@ -201,7 +201,8 @@ bool sSql::add_student()
  */
 void sSql::try_add_student(int stud_id,QString stu_name,QString _class)
 {
-    add_student_base(stud_id,stu_name,_class);
+    if(add_student_base(stud_id,stu_name,_class))
+        emit send_student_added_signal();
 }
 
 /**
@@ -219,7 +220,6 @@ bool sSql::read_all_student(QTreeWidget *content)
     }
     else
     {
-
         int col=4;
         content->setColumnCount(col);
         QStringList header({"姓名","学号","班级","优良程度"});
@@ -233,7 +233,6 @@ bool sSql::read_all_student(QTreeWidget *content)
             qDebug()<<QString("id:%1    name:%2    class:%3   performance:%4").arg(stud_id).arg(stud_name).arg(_class).arg(performance);
             QTreeWidgetItem* new_top_item = new QTreeWidgetItem(QStringList({stud_name,stud_id,_class,performance}));//创建层
             content->addTopLevelItem(new_top_item);//添加层
-
             QSqlQuery query1(mydb);//开始创建带有学生成绩的子节点
             query1.prepare("SELECT * FROM grade WHERE stud_id = :stud_id");
             query1.bindValue(":stud_id",stud_id);
@@ -280,7 +279,6 @@ bool sSql::search_for_student(QString stu_name,QTreeWidget *widget_to_show)
             QString performance=query.value("performance").toString();
             QTreeWidgetItem* new_top_item = new QTreeWidgetItem(QStringList({stud_name,stud_id,_class,performance}));//创建层
             widget_to_show->addTopLevelItem(new_top_item);//添加层
-            qDebug()<<QString("id:%1    name:%2    class:%3   performance:%4").arg(stud_id).arg(stud_name).arg(_class).arg(performance);
             QSqlQuery query1(mydb);//创建带有学生成绩的子节点
             query1.prepare("SELECT * FROM grade WHERE stud_id = :stud_id");
             query1.bindValue(":stud_id",stud_id);
@@ -307,7 +305,7 @@ bool sSql::add_grade()
     new_score=new class add_score;//创建界面对象
     new_score->setWindowTitle("new grade");//标题
     new_score->show();
-    connect(new_score,SIGNAL(send_new_student_signal(QString,QString,QString,QString,float)),this,
+    connect(new_score,SIGNAL(send_new_score_signal(QString,QString,QString,QString,float)),this,
             SLOT(try_add_grade(QString,QString,QString,QString,float)));//连接信号和槽函数
     return true;
 }
@@ -324,7 +322,8 @@ void sSql::try_add_grade(QString stu_name,QString lesson_name,QString year,QStri
 {
     int stu_id=find_student(stu_name);
     int lesson_id=find_lesson(lesson_name,year,term);
-    add_garde_base(stu_id,lesson_id,grade);
+    if(add_garde_base(stu_id,lesson_id,grade))
+        emit send_grade_added_signal();
 }
 /**
  * @brief sSql::add_garde_base
@@ -378,7 +377,7 @@ bool sSql::check_passwd(QString user_name,QString passwd)
     }
     else if(passwd==query.value("passwd").toString())//找到user且密码正确
     {
-        qDebug()<<"login success";
+        qDebug()<<"login success!";
         return true;
     }
     else//密码错误
@@ -390,15 +389,198 @@ bool sSql::check_passwd(QString user_name,QString passwd)
     }
 }
 
+/**
+ * @brief sSql::delete_student 删除学号为stud_id的学生
+ * @param stud_id 要删除学生的学号
+ * @return
+ */
+bool sSql::delete_student_base(int stud_id)
+{
+    QSqlQuery query(mydb);// 用于执行sql语句的对象
+    query.prepare("DELETE FROM student_info WHERE stud_id = :stud_id");//要执行的sql语句
+    query.bindValue(":stud_id",stud_id);
+    if(!query.exec())
+    {
+        qDebug() << "Error: fail to delete student. " << query.lastError();
+        return false;
+    }
+    else
+    {
+        qDebug()<<"student deleted!";
+        return true;
+    }
+    return true;
+}
+
+/**
+ * @brief sSql::delete_student 重载，删除姓名为stu_name的学生
+ * @param stu_name 姓名
+ * @return
+ */
+bool sSql::delete_student_base(QString stu_name)
+{
+    int lesson_id=find_student(stu_name);
+    if(lesson_id!=-1)
+        return delete_student_base(lesson_id);
+    else
+        return false;
+}
+
+/**
+ * @brief sSql::delete_grade 删除，学号为stud_id的学生，课程ID为lesson_id的成绩
+ * @param stud_id 学号
+ * @param lesson_id 课程ID
+ * @return
+ */
+bool sSql::delete_grade_base(int stud_id,int lesson_id)
+{
+    QSqlQuery query(mydb);// 用于执行sql语句的对象
+    query.prepare("DELETE FROM grade WHERE "
+                  "stud_id = :stud_id "
+                  "lesson_id = :lesson_id");//要执行的sql语句
+    query.bindValue(":stud_id",stud_id);
+    query.bindValue(":lesson_id",lesson_id);
+    if(!query.exec())
+    {
+        qDebug() << "Error: fail to delete grade. " << query.lastError();
+        return false;
+    }
+    else
+    {
+        qDebug()<<"grade deleted!";
+        return true;
+    }
+    return true;
+}
+
+/**
+ * @brief sSql::delete_grade 重载
+ * @param stu_name
+ * @param lesson_name
+ * @param year
+ * @param term
+ * @return
+ */
+bool sSql::delete_grade_base(QString stu_name,QString lesson_name,QString year,QString term)
+{
+    int lesson_id=find_lesson(lesson_name,year,term);
+    int stud_id=find_student(stu_name);
+    if(lesson_id!=-1&&stud_id!=-1)
+        return delete_grade_base(stud_id,lesson_id);
+    else
+        return false;
+}
+
+/**
+ * @brief sSql::delete_lesson 删除ID为lesson_id的课程
+ * @param lesson_id
+ * @return true if success
+ */
+bool sSql::delete_lesson_base(int lesson_id)
+{
+    QSqlQuery query(mydb);// 用于执行sql语句的对象
+    query.prepare("DELETE FROM lesson_info WHERE lesson_id = :lesson_id");//要执行的sql语句
+    query.bindValue(":lesson_id",lesson_id);
+    if(!query.exec())
+    {
+        qDebug() << "Error: fail to delete lesson. " << query.lastError();
+        return false;
+    }
+    else
+    {
+        qDebug()<<"lesson deleted!";
+        return true;
+    }
+}
+
+/**
+ * @brief sSql::delete_lesson 重载，删除课程
+ * @param lesson_name
+ * @param year
+ * @param term
+ * @return
+ */
+bool sSql::delete_lesson_base(QString lesson_name,QString year,QString term)
+{
+    int lesson_id=find_lesson(lesson_name,year,term);
+    if(lesson_id!=-1)//课程存在
+        return delete_lesson_base(lesson_id);
+    else
+        return false;
+}
+
+/**
+ * @brief sSql::delete_student 提供给其他模块的接口函数，
+ * @return true if success
+ */
 bool sSql::delete_student()
 {
+    class delete_student *delete_stu;
+    delete_stu=new class delete_student;
+    delete_stu->setWindowTitle("delete student");
+    delete_stu->show();
+    connect(delete_stu,SIGNAL(send_delete_student_signal(int)),this,
+            SLOT(try_delete_student(int)));//连接信号和槽函数
+    connect(delete_stu,SIGNAL(send_delete_student_signal(QString)),this,
+            SLOT(try_delete_student(QString)));
     return true;
+}
+
+/**
+ * @brief sSql::try_delete_student
+ * @param stud_id
+ */
+void sSql::try_delete_student(int stud_id)
+{
+    if(delete_student_base(stud_id))
+        emit send_student_deleted_signal();
+}
+
+/**
+ * @brief sSql::try_delete_student
+ * @param stu_name
+ */
+void sSql::try_delete_student(QString stu_name)
+{
+    if(delete_student_base(stu_name))
+        emit send_student_deleted_signal();
 }
 
 bool sSql::delete_grade()
 {
+    class delete_grade *del_grade;
+    del_grade=new class delete_grade;
+    del_grade->setWindowTitle("delete grade");
+    del_grade->show();
+    connect(del_grade,SIGNAL(send_grade_deleted_signal(int,int)),this,SLOT(try_delete_grade(int,int)));
+    connect(del_grade,SIGNAL(send_grade_deleted_signal(QString,QString,QString,QString)),this,SLOT(try_delete_grade(QString,QString,QString,QString)));
     return true;
 }
+
+/**
+ * @brief sSql::try_delete_grade
+ * @param stud_id
+ * @param lesson_id
+ */
+void sSql::try_delete_grade(int stud_id,int lesson_id)
+{
+    if(delete_grade_base(stud_id,lesson_id))
+        emit send_grade_deleted_signal();
+}
+
+/**
+ * @brief sSql::try_delete_grade
+ * @param stu_name
+ * @param lesson_name
+ * @param year
+ * @param term
+ */
+void sSql::try_delete_grade(QString stu_name,QString lesson_name,QString year,QString term)
+{
+    if(delete_grade_base(stu_name,lesson_name,year,term))
+        emit send_grade_deleted_signal();
+}
+
 
 
 
