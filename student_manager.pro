@@ -26,6 +26,7 @@ HEADERS += \
     add_student.h \
     delete_grade.h \
     delete_student.h \
+    global.h \
     lesson_manage_page.h \
     login_page.h \
     mainwindow.h \

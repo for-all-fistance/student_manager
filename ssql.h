@@ -27,29 +27,33 @@ class sSql : public QObject
 public:
     explicit sSql(QObject *parent = nullptr);
     bool read_all_student(QTreeWidget *content);
-
+    bool calc_performance();
+    bool calc_performance(int stud_id);
     bool search_for_student(QString stu_name,QTreeWidget *widget_to_show);
     bool add_student();
     bool add_grade();
     bool check_passwd(QString user_name,QString passwd);
-    bool delete_student();
-    bool delete_grade();
+    bool delete_grade(int stud_id,int lesson_id);
+    bool delete_grade(QString stu_name,QString lesson_name,QString year,QString term);
+    bool delete_lesson(int lesson_id);
+    bool delete_lesson(QString lesson_name,QString year,QString term);
+    bool delete_student(int stud_id);
+    bool delete_student(QString stu_name);
+    bool update(QString stu_name,int stud_id,QString _class,QString performance);
+    bool update(int stud_id,int lesson_id,QString stu_name,QString lesson_name,float grade);
+    bool update(int lesson_id,QString lesson_name,QString year,QString term);
+    bool update(QString stu_name,QString lesson_name,float grade,QString year,QString term);
 
 private:
     bool add_student_base(int stud_id,QString stu_name,QString _class);
     bool add_garde_base(int stu_id,int lesson_id,float grade);
     QSqlDatabase mydb;
     bool create_connection();
-    bool delete_grade_base(int stud_id,int lesson_id);
-    bool delete_grade_base(QString stu_name,QString lesson_name,QString year,QString term);
-    bool delete_lesson_base(int lesson_id);
-    bool delete_lesson_base(QString lesson_name,QString year,QString term);
-    bool delete_student_base(int stud_id);
-    bool delete_student_base(QString stu_name);
     QString find_student(int stud_id);
     int find_student(QString stu_name);
     QString find_lesson(int lesson_id);
     int find_lesson(QString lesson_name,QString year,QString term);
+    float average_score(int stud_id);
 signals:
     void send_student_deleted_signal();
     void send_student_added_signal();

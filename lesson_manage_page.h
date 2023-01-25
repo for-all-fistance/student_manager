@@ -34,6 +34,8 @@ private slots:
 
     void on_del_score_btn_clicked();
 
+    void on_find_stu_clicked();
+
 signals:
     void send_turn2student_manage_signal();
 

@@ -134,20 +134,13 @@
      <x>10</x>
      <y>80</y>
      <width>108</width>
-     <height>151</height>
+     <height>171</height>
     </rect>
    </property>
    <property name="title">
     <string>更改信息</string>
    </property>
    <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="0">
-     <widget class="QPushButton" name="add_score_btn">
-      <property name="text">
-       <string>新建成绩</string>
-      </property>
-     </widget>
-    </item>
     <item row="1" column="0">
      <widget class="QPushButton" name="del_score_btn">
       <property name="text">
@@ -155,10 +148,31 @@
       </property>
      </widget>
     </item>
-    <item row="2" column="0">
+    <item row="3" column="0">
+     <widget class="QPushButton" name="pushButton">
+      <property name="text">
+       <string>删除课程</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="0">
+     <widget class="QPushButton" name="add_score_btn">
+      <property name="text">
+       <string>新建成绩</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="0">
      <widget class="QPushButton" name="chag_score_btn">
       <property name="text">
        <string>修改成绩</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <widget class="QPushButton" name="pushButton_2">
+      <property name="text">
+       <string>新建课程</string>
       </property>
      </widget>
     </item>

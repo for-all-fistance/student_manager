@@ -111,6 +111,12 @@ void lesson_manage_page::on_add_score_btn_clicked()
 
 void lesson_manage_page::on_del_score_btn_clicked()
 {
-    sql_server.delete_grade();
+    //sql_server.delete_grade();
+}
+
+
+void lesson_manage_page::on_find_stu_clicked()
+{
+
 }
 
