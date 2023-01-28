@@ -40,7 +40,9 @@ lesson_manage_page::~lesson_manage_page()
 void lesson_manage_page::init()
 {
     connect(ui->turn2student_manage,SIGNAL(clicked(bool)),this,SLOT(do_process_turn2student_manage_signal()));
-    set_content();
+
+    connect(ui->content,SIGNAL(itemClicked(QTreeWidgetItem*,int)),this,SLOT(show_lesson_summery(QTreeWidgetItem*)));
+    set_content();//显示列表
 }
 
 /**
@@ -50,20 +52,10 @@ void lesson_manage_page::init()
   */
 void lesson_manage_page::set_content()
 {
-    int row=4,col=4,student_count=20;
-    //设置行，列数
-     ui->content->setColumnCount(row);
-     ui->content->setColumnCount(col);
-    //调整大小和位置
-    //ui->content->move(ui->topic->pos());
-    //设置表格内容
-     QStringList header({"姓名","学号","班级","成绩"});
-     ui->content->setHeaderLabels(header);
-     for(int i=0;i<student_count;i++)
-     {
-         QTreeWidgetItem* new_top_item = new QTreeWidgetItem(QStringList({"张三","1000","3","60"}));
-         ui->content->addTopLevelItem(new_top_item);
-     }
+    ui->content->clear();
+    ui->content->setSelectionMode(QAbstractItemView::SingleSelection);
+    sql_server.read_all_lesson(ui->content);
+    ui->content->update();
 }
 
 /**
@@ -117,6 +109,44 @@ void lesson_manage_page::on_del_score_btn_clicked()
 
 void lesson_manage_page::on_find_stu_clicked()
 {
+    if(ui->search_bar_lesson->isModified())
+    {
+        ui->content->clear();
+        sql_server.search_for_student(ui->search_bar_lesson->text(),ui->content);
+        ui->content->update();
+    }
+    else
+    {
+        refresh();
+    }
+}
 
+/**
+ * @brief lesson_manage_page::show_lesson_info 当选中不同的课程时显示相应的课程概述
+ * @param my_lesson
+ */
+void lesson_manage_page::show_lesson_summery(QTreeWidgetItem* my_lesson)
+{
+    QString total_cnt=sql_server.get("lesson_info","total_count","lesson_id",my_lesson->text(1));
+    QString avrg_score=sql_server.get("lesson_info","average_score","lesson_id",my_lesson->text(1));
+    QString pass_rt=sql_server.get("lesson_info","pass_rate","lesson_id",my_lesson->text(1));
+    ui->total_stu->setText("总人数："+total_cnt);
+    ui->pass_rate->setText("及格率："+pass_rt);
+    ui->average->setText("平均分："+avrg_score);
+
+}
+
+void lesson_manage_page::on_add_lesson_btn_clicked()
+{
+
+}
+
+/**
+ * @brief lesson_manage_page::refresh 刷新
+ */
+void lesson_manage_page::refresh()
+{
+    sql_server.clac_lesson_summery();
+    set_content();
 }
 

@@ -26,7 +26,6 @@ sSql::sSql(QObject *parent)
     : QObject{parent}
 {
     create_connection();
-    calc_performance();
 }
 
 /**
@@ -61,14 +60,14 @@ QString sSql::find_student(int stud_id)
 {
     QSqlQuery query(mydb);// 用于执行sql语句的对象
     QString find = QString("SELECT * FROM student_info WHERE stud_id = :stud_id");// sql语句字符串
-    query.bindValue(":stud_id", stud_id);//使用 bindValue函数将占位符替换
     query.prepare(find);
+    query.bindValue(":stud_id", stud_id);//使用 bindValue函数将占位符替换
     if(!query.exec())// 执行sql语句
     {
         qDebug() << "Error: Fail to find student. " << query.lastError();
         return "";
     }
-    else
+    else if(query.first())
     {     qDebug() << "student found!";
         QString stu_name=query.value("stu_name").toString();
         return stu_name;
@@ -83,17 +82,18 @@ QString sSql::find_student(int stud_id)
 int sSql::find_student(QString stu_name)
 {
     QSqlQuery query(mydb);// 用于执行sql语句的对象
-    QString find = QString("SELECT * FROM student_info WHERE stu_name = :stu_name");// sql语句字符串
-    query.bindValue(":stu_name", stu_name);//使用 bindValue函数将占位符替换
-    query.prepare(find);
+    query.prepare("SELECT * FROM student_info WHERE stu_name=:stu_name");
+    query.bindValue(":stu_name",stu_name);//使用 bindValue函数将占位符替换
     if(!query.exec())// 执行sql语句
     {
         qDebug() << "Error: Fail to find student. " << query.lastError();
         return -1;
     }
-    else
-    {     qDebug() << "student found!";
+    else if(query.first())
+    {
+
         int stud_id=query.value("stud_id").toInt();
+        qDebug() << "student found!";
         return stud_id;
     }
 }
@@ -106,15 +106,14 @@ int sSql::find_student(QString stu_name)
 QString sSql::find_lesson(int lesson_id)
 {
     QSqlQuery query(mydb);// 用于执行sql语句的对象
-    QString find = QString("SELECT * FROM lesson_info WHERE lesson_id = :lesson_id");// sql语句字符串
+    query.prepare("SELECT * FROM lesson_info WHERE lesson_id = :lesson_id");
     query.bindValue(":lesson_id", lesson_id);//使用 bindValue函数将占位符替换
-    query.prepare(find);
     if(!query.exec())// 执行sql语句
     {
         qDebug() << "Error: Fail to find lesson. " << query.lastError();
         return "";
     }
-    else
+    else if(query.first())
     {     qDebug() << "lesson found!";
         QString lesson_name=query.value("lesson_name").toString();
         return lesson_name;
@@ -132,23 +131,45 @@ QString sSql::find_lesson(int lesson_id)
 int sSql::find_lesson(QString lesson_name,QString year,QString term)
 {
     QSqlQuery query(mydb);// 用于执行sql语句的对象
-    QString find = QString("SELECT * FROM student_info WHERE "
-                           "lesson_name = :lesson_name "
-                           "year = :year "
-                           "term = :term ");// sql语句字符串
+    query.prepare("SELECT * FROM lesson_info WHERE "
+                  "lesson_name = :lesson_name "
+                  "year = :year "
+                  "term = :term ");
     query.bindValue(":lesson_name", lesson_name);//使用 bindValue函数将占位符替换
     query.bindValue(":year",year);
     query.bindValue(":term",term);
-    query.prepare(find);
     if(!query.exec())// 执行sql语句
     {
-        qDebug() << "Error: Fail to find student. " << query.lastError();
+        qDebug() << "Error: Fail to find lesson. " << query.lastError();
         return -1;
     }
-    else
-    {     qDebug() << "student found!";
-        int stu_id=query.value("stud_id").toInt();
+    else if(query.first())
+    {     qDebug() << "lesson found!";
+        int stu_id=query.value("lesson_id").toInt();
         return stu_id;
+    }
+}
+
+/**
+ * @brief sSql::find_lesson 尝试获取对应的课程号，可能出现误查
+ * @param lesson_name
+ * @return
+ */
+int sSql::find_lesson(QString lesson_name)
+{
+    QSqlQuery query(mydb);// 用于执行sql语句的对象
+    query.prepare("SELECT * FROM lesson_info WHERE "
+                  "lesson_name = :lesson_name ");
+    query.bindValue(":lesson_name", lesson_name);//使用 bindValue函数将占位符替换
+    if(!query.exec())// 执行sql语句
+    {
+        qDebug() << "Error: Fail to find lesson. " << query.lastError();
+        return -1;
+    }
+    else if(query.first())
+    {     qDebug() << "lesson found!";
+        int lesson_id=query.value("lesson_id").toInt();
+        return lesson_id;
     }
 }
 
@@ -169,56 +190,51 @@ bool sSql::calc_performance()
     {
         qDebug()<<"ready to calculate performance.";
         while (query.next()) {
-                float avrg=average_score(query.value("stud_id").toInt());
-                QSqlQuery query1(mydb);// 用于执行sql语句的对象
-                query1.prepare("UPDATE student_info SET performance = :performance WHERE stud_id = :stud_id");//要执行的sql语句
-                query1.bindValue(":stud_id",query.value("stud_id").toInt());
-                if(avrg>=90) query1.bindValue(":performance","优");
-                else if(avrg>=80)   query1.bindValue(":performance","良");
-                else if(avrg>=60)   query1.bindValue(":performance","合格");
-                else query1.bindValue(":performance","不合格");
-                query1.exec();
+                calc_performance(query.value("stud_id").toInt());
         }
+        qDebug()<<"calculation finished!";
         return true;
     }
 }
 
 /**
- * @brief sSql::calc_performance 重新改计算某个学生的优良程度
+ * @brief sSql::calc_performance 重新计算某个学生的平均分和优良程度
  * @param stud_id 需要重新计算的学生的学号
  * @return
  */
 bool sSql::calc_performance(int stud_id)
 {
-    QSqlQuery query(mydb);// 用于执行sql语句的对象
-    query.prepare("SELECT * FROM student_info WHERE stud_id = :stud_id");//要执行的sql语句
-    query.bindValue(":stud_id",stud_id);
-    if(!query.exec())
-    {
-        qDebug() << "Error: fail to find student when calculating perfoemance. " << query.lastError();
-        return false;
-    }
-    else
-    {
-        qDebug()<<"ready to calculate performance.";
-        float avrg=average_score(stud_id);
-        if(avrg>=90)    query.value("performance").setValue(QString("优"));
-        else if(avrg>=80)   query.value("performance").setValue(QString("良"));
-        else if(avrg>=60)   query.value("performance").setValue(QString("合格"));
-        else query.value("performance").setValue(QString("不合格"));
-        return true;
-    }
+        float avrg=student_average(stud_id);
+        QSqlQuery query(mydb);// 用于执行sql语句的对象
+        query.prepare("UPDATE student_info SET performance=:performance,average_score=:average_score WHERE stud_id = :stud_id");//要执行的sql语句
+        query.bindValue(":stud_id",query.value("stud_id").toInt());
+        if(avrg>=90) query.bindValue(":performance","优");
+        else if(avrg>=80)   query.bindValue(":performance","良");
+        else if(avrg>=60)   query.bindValue(":performance","合格");
+        else query.bindValue(":performance","不合格");
+        query.bindValue(":average_score",avrg);//更新成绩
+        if(!query.exec())
+        {
+            qDebug() << "Error: fail to calculate performance of student "+QString(stud_id) << query.lastError();
+            return false;
+        }
+        else
+        {
+            //query.first();
+            qDebug()<<QString(stud_id);
+            return true;
+        }
 }
 
 /**
- * @brief sSql::average_score 计算某个学生的平均分
+ * @brief sSql::student_average 计算某个学生的平均分
  * @param stud_id 要计算的学生学号
- * @return 如果计算正确就返回平均分，否则返回-1
+ * @return 如果计算正确就返回平均分，否则返回-1（包括该学生暂无成绩）
  */
-float sSql::average_score(int stud_id)
+float sSql::student_average(int stud_id)
 {
     QSqlQuery query(mydb);// 用于执行sql语句的对象
-    query.prepare("SELECT * from grade WHERE stud_id = :stud_id");//要执行的sql语句，获取该学生的所有成绩
+    query.prepare("SELECT * FROM grade WHERE stud_id = :stud_id");//要执行的sql语句，获取该学生的所有成绩
     query.bindValue(":stud_id",stud_id);
     if(!query.exec())
     {
@@ -239,6 +255,138 @@ float sSql::average_score(int stud_id)
     }
 }
 
+/**
+ * @brief sSql::clac_lesson_summery重新计算所有课程的概况
+ * @return
+ */
+bool sSql::clac_lesson_summery()
+{
+    QSqlQuery query(mydb);// 用于执行sql语句的对象
+    query.prepare("SELECT * FROM lesson_info");//要执行的sql语句
+    if(!query.exec())
+    {
+        qDebug() << "Error when trying to calculate lesson summery: . " << query.lastError();
+        return false;
+    }
+    else
+    {
+        qDebug()<<"ready to calculate lesson summery.";
+        while (query.next()) {
+            calc_lesson_summery(query.value("lesson_id").toInt());
+        }
+        qDebug()<<"calculation finished";
+        return true;
+    }
+}
+
+/**
+ * @brief sSql::calc_lesson_summery 重新计算课程的概况
+ * @param lesson_id 要计算课程的课程号
+ * @return
+ */
+bool sSql::calc_lesson_summery(int lesson_id)
+{
+        int total_cnt=lesson_total_count(lesson_id);
+        float avrg_score=lesson_average(lesson_id);
+        float pass_rt=lesson_pass_rate(lesson_id);
+        QSqlQuery query(mydb);// 用于执行sql语句的对象
+        query.prepare("UPDATE lesson_info SET total_count=:total_cnt,average_score=:avrg_score,pass_rate=:pass_rt "
+                      "WHERE lesson_id=:lesson_id");//要执行的sql语句
+        query.bindValue(":total_cnt",total_cnt);
+        query.bindValue(":avrg_score",avrg_score);
+        query.bindValue(":pass_rt",pass_rt);
+        query.bindValue(":lesson_id",lesson_id);
+        if(!query.exec())
+        {
+            qDebug() << "Error: in sSql::calc_lesson_summery(int lesson_id). " << query.lastError();
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+}
+
+
+/**
+ * @brief sSql::lesson_average 计算某门课程的平均分
+ * @param lesson_id 要计算的课程号
+ * @return  如果计算正确就返回平均分，否则返回-1（包括该课程暂无成绩）
+ */
+float sSql::lesson_average(int lesson_id)
+{
+    QSqlQuery query(mydb);// 用于执行sql语句的对象
+    query.prepare("SELECT * FROM grade WHERE lesson_id=:lesson_id");//要执行的sql语句
+    query.bindValue(":lesson_id",lesson_id);
+    if(!query.exec())
+    {
+        qDebug() << "Error when trying to find leson:  " << query.lastError();
+        return -1;
+    }
+    else
+    {
+        float sum=0;
+        int count=0;
+        while (query.next()) {
+            sum+=query.value("grade").toFloat();
+            count+=1;
+        }
+        qDebug()<<"lesson average score calculation finished";
+        if(count==0)    return -1;//成绩为空
+        else    return sum/count;
+    }
+}
+
+/**
+ * @brief sSql::lesson_total_count 计算课程的总人数
+ * @param lesson_id 课程号
+ * @return 总人数，如果查询失败则返回-1
+ */
+int sSql::lesson_total_count(int lesson_id)
+{
+    QSqlQuery query(mydb);// 用于执行sql语句的对象
+    query.prepare("SELECT * FROM grade WHERE lesson_id=:lesson_id");//要执行的sql语句
+    query.bindValue(":lesson_id",lesson_id);
+    if(!query.exec())
+    {
+        qDebug() << "Error when trying to find leson:  " << query.lastError();
+        return -1;
+    }
+    else
+    {
+        int cnt=size(query);
+        return cnt;
+    }
+}
+
+/**
+ * @brief sSql::lesson_pass_rate 计算课程的及格率
+ * @param lesson_id
+ * @return
+ */
+float sSql::lesson_pass_rate(int lesson_id)
+{
+    QSqlQuery query(mydb);// 用于执行sql语句的对象
+    query.prepare("SELECT * FROM grade WHERE lesson_id=:lesson_id");//要执行的sql语句
+    query.bindValue(":lesson_id",lesson_id);
+    if(!query.exec())
+    {
+        qDebug() << "Error when trying to find leson:  " << query.lastError();
+        return -1;
+    }
+    else
+    {
+        float pass=0;
+        float count=0;
+        while (query.next()) {
+            pass+=query.value("grade").toFloat()>=60?1:0;
+            count+=1;
+        }
+        qDebug()<<"lesson average score calculation finished";
+        if(count==0)    return -1;//成绩为空
+        else    return pass/count;
+    }
+}
 
 /**
  * @brief sSql::add_student_base
@@ -250,9 +398,9 @@ float sSql::average_score(int stud_id)
 bool sSql::add_student_base(int stud_id,QString stu_name,QString _class)
 {
     QSqlQuery query(mydb);// 用于执行sql语句的对象
-    query.prepare("INSERT INTO student_info (stu_name,stud_id,class) VALUES (:stu_name,:stud_id,:class)");
-    query.bindValue(":stud_id", stud_id);
+    query.prepare("INSERT INTO student_info(stu_name,stud_id,class) VALUES(:stu_name,:stud_id,:class)");
     query.bindValue(":stu_name", stu_name);
+    query.bindValue(":stud_id", stud_id);
     query.bindValue(":class", _class);
     if(!query.exec())
     {
@@ -300,7 +448,6 @@ void sSql::try_add_student(int stud_id,QString stu_name,QString _class)
  */
 bool sSql::read_all_student(QTreeWidget *content)
 {
-    content->setSelectionMode(QAbstractItemView::MultiSelection);
     QSqlQuery query(mydb);// 用于执行sql语句的对象
     query.prepare("SELECT * FROM student_info");
     if(!query.exec())
@@ -320,11 +467,16 @@ bool sSql::read_all_student(QTreeWidget *content)
             QString stud_name = query.value("stu_name").toString();
             QString _class = query.value("class").toString();
             QString performance=query.value("performance").toString();
-            qDebug()<<QString("id:%1    name:%2    class:%3   performance:%4").arg(stud_id).arg(stud_name).arg(_class).arg(performance);
+            //qDebug()<<QString("id:%1    name:%2    class:%3   performance:%4").arg(stud_id).arg(stud_name).arg(_class).arg(performance);
             QTreeWidgetItem* new_top_item = new QTreeWidgetItem(QStringList({stud_name,stud_id,_class,performance}),STUDENT);//创建层
-            new_top_item->setFlags(new_top_item->flags() | Qt::ItemIsEditable);
             //new_top_item->setCheckState(0, Qt::Unchecked);
-            content->addTopLevelItem(new_top_item);//添加层
+            content->addTopLevelItem(new_top_item);//添加顶层
+
+            QTreeWidgetItem*  sec_child_topic= new QTreeWidgetItem(QStringList{"课程名称","成绩"});//创建子节点标题
+            new_top_item->addChild(sec_child_topic);    //将子节点标题添加到顶层节点上
+            //sec_child_topic->setFlags(sec_child_topic->flags() | Qt::edit)
+            sec_child_topic->setDisabled(true);
+
             QSqlQuery query1(mydb);//开始创建带有学生成绩的子节点
             query1.prepare("SELECT * FROM grade WHERE stud_id = :stud_id");
             query1.bindValue(":stud_id",stud_id);
@@ -333,14 +485,65 @@ bool sSql::read_all_student(QTreeWidget *content)
             {
                 QString lesson_name=query1.value("lesson_name").toString();
                 QString grade=query1.value("grade").toString();
-                QString year=query1.value("year").toString();
-                QString term=query1.value("term").toString();
-                QTreeWidgetItem* sec_child_item = new QTreeWidgetItem(QStringList{lesson_name,grade,year,term},GRADE);//创建子节点
+                QTreeWidgetItem* sec_child_item = new QTreeWidgetItem(QStringList{lesson_name,grade},GRADE);//创建子节点
                 //sec_child_item->setCheckState(0,Qt::Unchecked);
                 new_top_item->addChild(sec_child_item);    //将子节点添加到顶层节点上
             }
         }
-        content->update();
+        return true;
+    }
+}
+
+/**
+ * @brief sSql::read_all_lesson
+ * @param content
+ * @return
+ */
+bool sSql::read_all_lesson(QTreeWidget *content)
+{
+    QSqlQuery query(mydb);// 用于执行sql语句的对象
+    query.prepare("SELECT * FROM lesson_info");
+    if(!query.exec())
+    {
+        qDebug() << "Error: Fail to query table. " << query.lastError();
+        return false;
+    }
+    else
+    {
+        int col=4;
+        content->setColumnCount(col);
+        QStringList header({"课程名称","课程号","学年","学期"});//父节点标签
+        content->setHeaderLabels(header);
+        while(query.next())
+        {
+            QString lesson_id = query.value("lesson_id").toString();
+            QString lesson_name = query.value("lesson_name").toString();
+            QString year = query.value("year").toString();
+            QString term=query.value("term").toString();
+            //qDebug()<<QString("id:%1    name:%2    year:%3   term:%4").arg(lesson_id).arg(lesson_name).arg(year).arg(term);
+            QTreeWidgetItem* new_top_item = new QTreeWidgetItem(QStringList({lesson_name,lesson_id,year,term}),LESSON);//创建层
+            //new_top_item->setCheckState(0, Qt::Unchecked);
+            content->addTopLevelItem(new_top_item);//添加顶层
+
+            QTreeWidgetItem*  sec_child_topic= new QTreeWidgetItem(QStringList{"姓名","学号","成绩"});//创建子节点标签
+            new_top_item->addChild(sec_child_topic);    //将子节点标题添加到顶层节点上
+            //sec_child_topic->setFlags(sec_child_topic->flags() | Qt::edit)
+            sec_child_topic->setDisabled(true);
+
+            QSqlQuery query1(mydb);//开始创建带有学生成绩的子节点
+            query1.prepare("SELECT * FROM grade WHERE lesson_id = :lesson_id");
+            query1.bindValue(":lesson_id",lesson_id);
+            query1.exec();
+            while(query1.next())
+            {
+                QString stu_name=query1.value("stu_name").toString();
+                QString stud_id=query1.value("stud_id").toString();
+                QString grade=query1.value("grade").toString();
+                QTreeWidgetItem* sec_child_item = new QTreeWidgetItem(QStringList{stu_name,stud_id,grade},GRADE);//创建子节点
+                //sec_child_item->setCheckState(0,Qt::Unchecked);
+                new_top_item->addChild(sec_child_item);    //将子节点添加到顶层节点上
+            }
+        }
         return true;
     }
 }
@@ -353,7 +556,7 @@ bool sSql::read_all_student(QTreeWidget *content)
  */
 bool sSql::search_for_student(QString stu_name,QTreeWidget *widget_to_show)
 {
-    widget_to_show->clear();
+
     QSqlQuery query(mydb);// 用于执行sql语句的对象
     query.prepare("SELECT * FROM student_info WHERE stu_name = :stu_name");//要执行的sql语句
     query.bindValue(":stu_name",stu_name);
@@ -364,17 +567,27 @@ bool sSql::search_for_student(QString stu_name,QTreeWidget *widget_to_show)
     }
     else
     {
-        int col =4;
+        int col=4;
         widget_to_show->setColumnCount(col);
+        QStringList header({"姓名","学号","班级","优良程度"});
+        widget_to_show->setHeaderLabels(header);
         while(query.next())
         {
             QString stud_id = query.value("stud_id").toString();
             QString stud_name = query.value("stu_name").toString();
             QString _class = query.value("class").toString();
             QString performance=query.value("performance").toString();
-            QTreeWidgetItem* new_top_item = new QTreeWidgetItem(QStringList({stud_name,stud_id,_class,performance}));//创建层
-            widget_to_show->addTopLevelItem(new_top_item);//添加层
-            QSqlQuery query1(mydb);//创建带有学生成绩的子节点
+            //qDebug()<<QString("id:%1    name:%2    class:%3   performance:%4").arg(stud_id).arg(stud_name).arg(_class).arg(performance);
+            QTreeWidgetItem* new_top_item = new QTreeWidgetItem(QStringList({stud_name,stud_id,_class,performance}),STUDENT);//创建层
+            //new_top_item->setCheckState(0, Qt::Unchecked);
+            widget_to_show->addTopLevelItem(new_top_item);//添加顶层
+
+            QTreeWidgetItem*  sec_child_topic= new QTreeWidgetItem(QStringList{"课程名称","成绩"});//创建子节点标题
+            new_top_item->addChild(sec_child_topic);    //将子节点标题添加到顶层节点上
+            //sec_child_topic->setFlags(sec_child_topic->flags() | Qt::edit)
+            sec_child_topic->setDisabled(true);
+
+            QSqlQuery query1(mydb);//开始创建带有学生成绩的子节点
             query1.prepare("SELECT * FROM grade WHERE stud_id = :stud_id");
             query1.bindValue(":stud_id",stud_id);
             query1.exec();
@@ -382,14 +595,73 @@ bool sSql::search_for_student(QString stu_name,QTreeWidget *widget_to_show)
             {
                 QString lesson_name=query1.value("lesson_name").toString();
                 QString grade=query1.value("grade").toString();
-                QTreeWidgetItem* sec_child_item = new QTreeWidgetItem(QStringList{lesson_name,grade});//创建子节点
+                QTreeWidgetItem* sec_child_item = new QTreeWidgetItem(QStringList{lesson_name,grade},GRADE);//创建子节点
+                //sec_child_item->setCheckState(0,Qt::Unchecked);
                 new_top_item->addChild(sec_child_item);    //将子节点添加到顶层节点上
             }
         }
-        widget_to_show->update();
         return true;
     }
 }
+
+/**
+ * @brief sSql::search_for_lesson
+ * @param lesson_name
+ * @param widget_to_show
+ * @return
+ */
+bool sSql::search_for_lesson(QString lesson_name,QTreeWidget *widget_to_show)
+{
+    QSqlQuery query(mydb);// 用于执行sql语句的对象
+    query.prepare("SELECT * FROM lesson_info WHERE lesson_name = :lesson_name");//要执行的sql语句
+    query.bindValue(":lesson_name",lesson_name);
+    if(!query.exec())
+    {
+        qDebug() << "Error: fail to find student. " << query.lastError();
+        return false;
+    }
+    else
+    {
+        int col=4;
+        widget_to_show->setColumnCount(col);
+        QStringList header({"课程名称","课程号","学年","学期"});//父节点标签
+        widget_to_show->setHeaderLabels(header);
+        while(query.next())
+        {
+            QString lesson_id = query.value("lesson_id").toString();
+            QString lesson_name = query.value("lesson_name").toString();
+            QString year = query.value("year").toString();
+            QString term=query.value("term").toString();
+            //qDebug()<<QString("id:%1    name:%2    year:%3   term:%4").arg(lesson_id).arg(lesson_name).arg(year).arg(term);
+            QTreeWidgetItem* new_top_item = new QTreeWidgetItem(QStringList({lesson_name,lesson_id,year,term}),LESSON);//创建层
+            //new_top_item->setCheckState(0, Qt::Unchecked);
+            widget_to_show->addTopLevelItem(new_top_item);//添加顶层
+
+            QTreeWidgetItem*  sec_child_topic= new QTreeWidgetItem(QStringList{"姓名","学号","成绩"});//创建子节点标签
+            new_top_item->addChild(sec_child_topic);    //将子节点标题添加到顶层节点上
+            //sec_child_topic->setFlags(sec_child_topic->flags() | Qt::edit)
+            sec_child_topic->setDisabled(true);
+
+            QSqlQuery query1(mydb);//开始创建带有学生成绩的子节点
+            query1.prepare("SELECT * FROM grade WHERE lesson_id = :lesson_id");
+            query1.bindValue(":lesson_id",lesson_id);
+            query1.exec();
+            while(query1.next())
+            {
+                QString stu_name=query1.value("stu_name").toString();
+                QString stud_id=query1.value("stud_id").toString();
+                QString grade=query1.value("grade").toString();
+                QTreeWidgetItem* sec_child_item = new QTreeWidgetItem(QStringList{stu_name,stud_id,grade},GRADE);//创建子节点
+                //sec_child_item->setCheckState(0,Qt::Unchecked);
+                new_top_item->addChild(sec_child_item);    //将子节点添加到顶层节点上
+            }
+        }
+        return true;
+    }
+}
+
+
+
 /**
  * @brief sSql::add_grade
  * @return
@@ -492,15 +764,7 @@ bool sSql::check_passwd(QString user_name,QString passwd)
  */
 bool sSql::delete_student(int stud_id)
 {
-    //首先要删除该学生的所有成绩
     QSqlQuery query(mydb);// 用于执行sql语句的对象
-    query.prepare("DELETE FROM grade WHERE stud_id = :stud_id");//要执行的sql语句
-    query.bindValue(":stud_id",stud_id);
-    if(!query.exec())
-    {
-        qDebug() << "Error: Error: fail to delete student. " << query.lastError();
-        return false;
-    }
     //删除该学生的信息
     query.prepare("DELETE FROM student_info WHERE stud_id = :stud_id");//要执行的sql语句
     query.bindValue(":stud_id",stud_id);
@@ -674,7 +938,7 @@ void sSql::try_delete_grade(QString stu_name,QString lesson_name,QString year,QS
 bool sSql::update(QString stu_name,int stud_id,QString _class,QString performance)
 {
     QSqlQuery query(mydb);// 用于执行sql语句的对象
-    query.prepare("UPDATE student_info SET stu_name=:stu_name class=:class performance=:performance WHERE stud_id=:stud_id");//要执行的sql语句
+    query.prepare("UPDATE student_info SET stu_name=:stu_name,class=:class,performance=:performance WHERE stud_id=:stud_id");//要执行的sql语句
     query.bindValue(":stu_name",stu_name);
     query.bindValue(":class",_class);
     query.bindValue(":performance",performance);
@@ -682,6 +946,7 @@ bool sSql::update(QString stu_name,int stud_id,QString _class,QString performanc
     if(!query.exec())
     {
         qDebug() << "Error: fail to update. " << query.lastError();
+
         return false;
     }
     else
@@ -703,7 +968,7 @@ bool sSql::update(QString stu_name,int stud_id,QString _class,QString performanc
 bool sSql::update(int stud_id,int lesson_id,QString stu_name,QString lesson_name,float grade)
 {
     QSqlQuery query(mydb);// 用于执行sql语句的对象
-    query.prepare("UPDATE grade SET stu_name=:stu_name lesson_name=:lesson_name grade=:grade WHERE stud_id=:stud_id AND lesson_id=:lesson_id");//要执行的sql语句
+    query.prepare("UPDATE grade SET stu_name=:stu_name,lesson_name=:lesson_name,grade=:grade WHERE stud_id=:stud_id AND lesson_id=:lesson_id");//要执行的sql语句
     query.bindValue(":stu_name",stu_name);
     query.bindValue(":lesson_name",lesson_name);
     query.bindValue(":grade",grade);
@@ -717,6 +982,7 @@ bool sSql::update(int stud_id,int lesson_id,QString stu_name,QString lesson_name
     else
     {
         qDebug()<<"update success!";
+        calc_performance(stud_id);//需要重新计算平均分和优良程度
         return true;
     }
 }
@@ -730,17 +996,37 @@ bool sSql::update(int stud_id,int lesson_id,QString stu_name,QString lesson_name
  * @param term
  * @return
  */
-bool sSql::update(QString stu_name,QString lesson_name,float grade,QString year,QString term)
+bool sSql::update(QString stu_name,QString lesson_name,float grade)
 {
     QSqlQuery query(mydb);// 用于执行sql语句的对象
-    query.prepare("UPDATE grade SET stu_name=:stu_name lesson_name=:lesson_name grade=:grade WHERE stud_id=:stud_id AND lesson_id=:lesson_id");//要执行的sql语句
+    query.prepare("UPDATE grade SET stu_name=:stu_name,grade=:grade,lesson_name=:lesson_name WHERE stud_id=:stud_id AND lesson_id=:lesson_id");//要执行的sql语句
     query.bindValue(":stu_name",stu_name);
     query.bindValue(":lesson_name",lesson_name);
     query.bindValue(":grade",grade);
+
+    //为确保修改后的数据正常，需要保证修改后的学生和课程已经存在
     int stud_id=find_student(stu_name);
-    int lesson_id=find_lesson(lesson_name,year,term);
+    if(stud_id==-1)
+    {
+        QMessageBox::critical(nullptr, QObject::tr("无效"),
+                              QObject::tr("学生不存在，请检查后重新修改！"
+                                          "Click Cancel to exit."), QMessageBox::Cancel);
+        return false;
+    }
     query.bindValue(":stud_id",stud_id);
+
+
+
+    int lesson_id=find_lesson(lesson_name);
+    if(lesson_id==-1)
+    {
+        QMessageBox::critical(nullptr, QObject::tr("无效"),
+                              QObject::tr("课程不存在，请检查后重新修改！"
+                                          "Click Cancel to exit."), QMessageBox::Cancel);
+        return false;
+    }
     query.bindValue(":lesson_id",lesson_id);
+
     if(!query.exec())
     {
         qDebug() << "Error: fail to update. " << query.lastError();
@@ -749,6 +1035,7 @@ bool sSql::update(QString stu_name,QString lesson_name,float grade,QString year,
     else
     {
         qDebug()<<"update success!";
+        calc_performance();//需要重新计算平均分和优良程度
         return true;
     }
 }
@@ -764,7 +1051,7 @@ bool sSql::update(QString stu_name,QString lesson_name,float grade,QString year,
 bool sSql::update(int lesson_id,QString lesson_name,QString year,QString term)
 {
     QSqlQuery query(mydb);// 用于执行sql语句的对象
-    query.prepare("UPDATE lesson_info SET lesson_name=:lesson_name year=:year term=:term WHERE lesson_id=:lesson_id");//要执行的sql语句
+    query.prepare("UPDATE lesson_info SET lesson_name=:lesson_name,year=:year,term=:term WHERE lesson_id=:lesson_id");//要执行的sql语句
     query.bindValue(":lesson_name",lesson_name);
     query.bindValue(":year",year);
     query.bindValue(":term",term);
@@ -781,4 +1068,29 @@ bool sSql::update(int lesson_id,QString lesson_name,QString year,QString term)
     }
 }
 
+/**
+ * @brief sSql::get 从数据库中获取值
+ * @param table_name 表名
+ * @param target_name 目标变量名
+ * @param key_name 主键数据字段名
+ * @param key_value 主键数据字段值
+ * @return 以QString格式返回目标值
+ */
+QString sSql::get(QString table_name,QString target_name,QString key_name,QString key_value)
+{
+    QSqlQuery query(mydb);// 用于执行sql语句的对象
+    query.prepare("SELECT * FROM "+table_name+" WHERE "+key_name+"="+key_value);//要执行的sql语句
+    if(!query.exec())
+    {
+        qDebug() << "Error: fail to get value. " << query.lastError();
+        return "";
+    }
+    else
+    {
+        query.first();
+        QString target_value=query.value(target_name).toString();
+        qDebug()<<"get value "+target_name;
+        return target_value;
+    }
+}
 

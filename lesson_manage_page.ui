@@ -65,7 +65,7 @@
      <bool>true</bool>
     </property>
     <property name="text">
-     <string>转到学生信息</string>
+     <string>回到主页面</string>
     </property>
    </widget>
    <widget class="QLabel" name="topic">
@@ -133,25 +133,25 @@
     <rect>
      <x>10</x>
      <y>80</y>
-     <width>108</width>
-     <height>171</height>
+     <width>121</width>
+     <height>201</height>
     </rect>
    </property>
    <property name="title">
     <string>更改信息</string>
    </property>
    <layout class="QGridLayout" name="gridLayout">
+    <item row="2" column="0">
+     <widget class="QPushButton" name="del_lesson_btn">
+      <property name="text">
+       <string>删除课程</string>
+      </property>
+     </widget>
+    </item>
     <item row="1" column="0">
      <widget class="QPushButton" name="del_score_btn">
       <property name="text">
        <string>删除成绩</string>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="0">
-     <widget class="QPushButton" name="pushButton">
-      <property name="text">
-       <string>删除课程</string>
       </property>
      </widget>
     </item>
@@ -162,15 +162,8 @@
       </property>
      </widget>
     </item>
-    <item row="4" column="0">
-     <widget class="QPushButton" name="chag_score_btn">
-      <property name="text">
-       <string>修改成绩</string>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="0">
-     <widget class="QPushButton" name="pushButton_2">
+    <item row="3" column="0">
+     <widget class="QPushButton" name="add_lesson_btn">
       <property name="text">
        <string>新建课程</string>
       </property>
@@ -178,41 +171,94 @@
     </item>
    </layout>
   </widget>
-  <widget class="QGroupBox" name="groupBox_2">
+  <widget class="QToolBox" name="lesson_summery">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>260</y>
-     <width>95</width>
-     <height>124</height>
+     <x>0</x>
+     <y>290</y>
+     <width>121</width>
+     <height>231</height>
     </rect>
    </property>
-   <property name="title">
-    <string>课程总览</string>
-   </property>
-   <layout class="QFormLayout" name="formLayout_2">
-    <item row="0" column="0">
-     <widget class="QLabel" name="total_stu">
-      <property name="text">
-       <string>总人数：</string>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="0">
-     <widget class="QLabel" name="pass_rate">
-      <property name="text">
-       <string>及格率：</string>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="0">
-     <widget class="QLabel" name="average">
-      <property name="text">
-       <string>平均分：</string>
-      </property>
-     </widget>
-    </item>
-   </layout>
+   <widget class="QWidget" name="summery">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>121</width>
+      <height>161</height>
+     </rect>
+    </property>
+    <attribute name="label">
+     <string>课程总览</string>
+    </attribute>
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QLabel" name="total_stu">
+       <property name="text">
+        <string>总人数：</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="pass_rate">
+       <property name="text">
+        <string>及格率：</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="average">
+       <property name="text">
+        <string>平均分：</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="grade_distribution">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>121</width>
+      <height>161</height>
+     </rect>
+    </property>
+    <attribute name="label">
+     <string>成绩分析</string>
+    </attribute>
+    <layout class="QVBoxLayout" name="verticalLayout_2">
+     <item>
+      <widget class="QLabel" name="perfect">
+       <property name="text">
+        <string>优秀：</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="good">
+       <property name="text">
+        <string>良好：</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="pass">
+       <property name="text">
+        <string>及格：</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="fail">
+       <property name="text">
+        <string>不及格：</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
   </widget>
   <widget class="QWidget" name="widget" native="true">
    <property name="geometry">

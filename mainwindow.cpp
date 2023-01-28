@@ -46,18 +46,15 @@ void MainWindow::init()
   */
 {
     login.show();//显示登录界面
+    set_content();
     connect(&login,SIGNAL(send_login_success_signal()),this,SLOT(do_process_login_request()));//收到登陆成功信号,打开主界面
-    connect(&lesson_manage,SIGNAL(send_turn2student_manage_signal()),this,SLOT(do_process_turn_back_request()));//如果点击返回学生信息页面的按钮，将打开主页面（学生信息页面）
-//    connect(&sql_server,SIGNAL(send_student_deleted_signal()),this,SLOT(ui->content->update()));//当数据发生变化时，刷新页面
-//    connect(&sql_server,SIGNAL(send_student_added_signal()),this,SLOT(ui->content->update()));
-//    connect(&sql_server,SIGNAL(send_grade_added_signal()),this,SLOT(ui->content->update()));
-//    connect(&sql_server,SIGNAL(send_grade_deleted_signal()),this,SLOT(ui->content->update()));
-//    connect(&sql_server,SIGNAL(send_lesson_deleted_signal()),this,SLOT(ui->content->update()));
-//    connect(&sql_server,SIGNAL(send_lesson_added_signal()),this,SLOT(ui->content->update()));
+    connect(&sql_server,SIGNAL(send_student_added_signal()),this,SLOT(refresh()));//当数据发生变化时，刷新页面
+    connect(&sql_server,SIGNAL(send_grade_added_signal()),this,SLOT(refresh()));
+    connect(&sql_server,SIGNAL(send_lesson_added_signal()),this,SLOT(refresh()));
     connect(ui->content,SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
             this,SLOT(qtreewidget_open_editor(QTreeWidgetItem*,int)));//双击编辑
-    connect(ui->content,SIGNAL(itemSelectionChanged(QTreeWidgetItem*,int)),this,SLOT(qtreewidget_close_editor()));//确认编辑
-    set_content();
+    connect(ui->content,SIGNAL(itemChanged(QTreeWidgetItem*,int)),this,SLOT(qtreewidget_close_editor(QTreeWidgetItem*,int)));//确认编辑
+
 }
 
 void MainWindow::do_process_login_request()
@@ -102,7 +99,9 @@ void MainWindow::set_content()
   */
 {
     ui->content->clear();
+    ui->content->setSelectionMode(QAbstractItemView::MultiSelection);
     sql_server.read_all_student(ui->content);
+    ui->content->update();
 }
 
 
@@ -142,13 +141,18 @@ void MainWindow::on_del_stu_btn_clicked()
 {
     QList<QTreeWidgetItem*> selectedItems=ui->content->selectedItems();
     foreach (QTreeWidgetItem *item, selectedItems) {
-        qDebug()<<item->text(1);
-        if(item->type()==STUDENT)
+        switch (item->type()) {
+        case STUDENT:
             sql_server.delete_student(item->text(1).toInt());
-        else if(item->type()==GRADE)
+            break;
+        case GRADE:
             sql_server.delete_grade(item->parent()->text(0),item->text(0),item->text(2),item->text(3));
+            break;
+        default:
+            break;
+        }
     }
-    set_content();
+    refresh();
 }
 
 /**
@@ -158,10 +162,12 @@ void MainWindow::on_find_stu_btn_clicked()
 {
     if(ui->search_bar_stu->isModified())//有输入
     {
+        ui->content->clear();
         sql_server.search_for_student(ui->search_bar_stu->text(),ui->content);
+        ui->content->update();
     }
-    else//无输入，刷新界面
-        set_content();
+    else
+        refresh();
 }
 
 /**
@@ -171,29 +177,36 @@ void MainWindow::on_find_stu_btn_clicked()
  */
 void MainWindow::qtreewidget_open_editor(QTreeWidgetItem *item, int col)
 {
-    ui->content->openPersistentEditor(item,col);
-    item_chang=item;
-    changed_col=col;
+    if(col!=1)//不能修改学号
+        ui->content->openPersistentEditor(item,col);
 }
 
 /**
  * @brief MainWindow::qtreewidget_close_editor 结束编辑并保存更改
  */
-void MainWindow::qtreewidget_close_editor()
+void MainWindow::qtreewidget_close_editor(QTreeWidgetItem *item,int col)
 {
-    if(item_chang!=NULL)
+    if(item!=NULL)
     {
-       ui->content->closePersistentEditor(item_chang,changed_col);
-       switch (item_chang->type()) {
+       ui->content->closePersistentEditor(item,col);
+       switch (item->type()) {
        case STUDENT:
-           sql_server.update(item_chang->text(0),item_chang->text(1).toInt(),item_chang->text(2),item_chang->text(3));
+           sql_server.update(item->text(0),item->text(1).toInt(),item->text(2),item->text(3));
            break;
        case GRADE:
-           sql_server.update(item_chang->text(0),item_chang->text(1),item_chang->text(2).toFloat(),item_chang->text(3),item_chang->text(4));
+           sql_server.update(item->parent()->text(0),item->text(0),item->text(1).toFloat());
            break;
        default:
            break;
        }
-    qDebug()<<"item changed!";
     }
+}
+
+/**
+ * @brief MainWindow::refresh 刷新
+ */
+void MainWindow::refresh()
+{
+    sql_server.calc_performance();
+    set_content();
 }

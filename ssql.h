@@ -27,9 +27,13 @@ class sSql : public QObject
 public:
     explicit sSql(QObject *parent = nullptr);
     bool read_all_student(QTreeWidget *content);
+    bool read_all_lesson(QTreeWidget *content);
     bool calc_performance();
     bool calc_performance(int stud_id);
+    bool clac_lesson_summery();
+    bool calc_lesson_summery(int lesson_id);
     bool search_for_student(QString stu_name,QTreeWidget *widget_to_show);
+    bool search_for_lesson(QString lesson_name,QTreeWidget *widget_to_show);
     bool add_student();
     bool add_grade();
     bool check_passwd(QString user_name,QString passwd);
@@ -42,18 +46,23 @@ public:
     bool update(QString stu_name,int stud_id,QString _class,QString performance);
     bool update(int stud_id,int lesson_id,QString stu_name,QString lesson_name,float grade);
     bool update(int lesson_id,QString lesson_name,QString year,QString term);
-    bool update(QString stu_name,QString lesson_name,float grade,QString year,QString term);
+    bool update(QString stu_name,QString lesson_name,float grade);
+    QString get(QString table_name,QString target_name,QString key_name,QString key_value);
 
 private:
+    QSqlDatabase mydb;
     bool add_student_base(int stud_id,QString stu_name,QString _class);
     bool add_garde_base(int stu_id,int lesson_id,float grade);
-    QSqlDatabase mydb;
     bool create_connection();
     QString find_student(int stud_id);
     int find_student(QString stu_name);
     QString find_lesson(int lesson_id);
     int find_lesson(QString lesson_name,QString year,QString term);
-    float average_score(int stud_id);
+    int find_lesson(QString lesson_name);
+    float student_average(int stud_id);
+    float lesson_average(int lesson_id);
+    int lesson_total_count(int lesson_id);
+    float lesson_pass_rate(int lesson_id);
 signals:
     void send_student_deleted_signal();
     void send_student_added_signal();

@@ -39,7 +39,8 @@ private slots:
 
     void on_del_stu_btn_clicked();
     void qtreewidget_open_editor(QTreeWidgetItem *item,int col);
-    void qtreewidget_close_editor();
+    void qtreewidget_close_editor(QTreeWidgetItem* item,int col);
+    void refresh();
 
 private:
     Ui::MainWindow *ui;
@@ -47,7 +48,5 @@ private:
     login_page login;
     lesson_manage_page lesson_manage;
     sSql sql_server;
-    QTreeWidgetItem *item_chang;
-    int changed_col;
 };
 #endif // MAINWINDOW_H
