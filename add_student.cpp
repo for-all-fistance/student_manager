@@ -64,7 +64,7 @@ void add_student::on_new_stud_btn_clicked()
     {
         QMessageBox::critical(this, QObject::tr("not modified"),
             QObject::tr("没有完整的输入\n"
-                        "要新建学生单位至少需要学号，姓名和班级！\n"), QMessageBox::Cancel);
+                        "要新建学生至少需要学号，姓名和班级！\n"), QMessageBox::Cancel);
     }
 }
 

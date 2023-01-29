@@ -47,7 +47,9 @@ void MainWindow::init()
 {
     login.show();//显示登录界面
     set_content();
-    connect(&login,SIGNAL(send_login_success_signal()),this,SLOT(do_process_login_request()));//收到登陆成功信号,打开主界面
+    connect(&login,SIGNAL(send_login_success_signal(QString)),this,SLOT(do_process_login_request(QString)));//收到登陆成功信号,打开主界面
+    connect(&login,SIGNAL(send_login_success_signal(QString)),&lesson_manage,SLOT(do_process_login_request(QString)));
+    connect(&lesson_manage,SIGNAL(send_turn2student_manage_signal()),this,SLOT(do_process_turn_back_request()));
     connect(&sql_server,SIGNAL(send_student_added_signal()),this,SLOT(refresh()));//当数据发生变化时，刷新页面
     connect(&sql_server,SIGNAL(send_grade_added_signal()),this,SLOT(refresh()));
     connect(&sql_server,SIGNAL(send_lesson_added_signal()),this,SLOT(refresh()));
@@ -57,7 +59,7 @@ void MainWindow::init()
 
 }
 
-void MainWindow::do_process_login_request()
+void MainWindow::do_process_login_request(QString user_name)
 /**
   * @brief  响应登录事件
   * @param
@@ -65,7 +67,8 @@ void MainWindow::do_process_login_request()
   */
 {
 
-    login.hide();
+    login.close();
+    ui->username_main->setText(user_name);
     this->show();
 }
 
@@ -123,7 +126,8 @@ void MainWindow::do_process_turn_back_request()
   * @retval
   */
 {
-    this->show();
+    refresh();
+    show();
 }
 
 /**
@@ -137,7 +141,7 @@ void MainWindow::on_add_stu_btn_clicked()
 /**
  * @brief MainWindow::on_del_stu_clicked 删除一个学生
  */
-void MainWindow::on_del_stu_btn_clicked()
+void MainWindow::on_del_btn_clicked()
 {
     QList<QTreeWidgetItem*> selectedItems=ui->content->selectedItems();
     foreach (QTreeWidgetItem *item, selectedItems) {
@@ -210,3 +214,11 @@ void MainWindow::refresh()
     sql_server.calc_performance();
     set_content();
 }
+
+
+
+void MainWindow::on_add_grade_btn_clicked()
+{
+    sql_server.add_grade();
+}
+

@@ -11,10 +11,9 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    add_lesson.cpp \
     add_score.cpp \
     add_student.cpp \
-    delete_grade.cpp \
-    delete_student.cpp \
     lesson_manage_page.cpp \
     login_page.cpp \
     main.cpp \
@@ -22,10 +21,9 @@ SOURCES += \
     ssql.cpp
 
 HEADERS += \
+    add_lesson.h \
     add_score.h \
     add_student.h \
-    delete_grade.h \
-    delete_student.h \
     global.h \
     lesson_manage_page.h \
     login_page.h \
@@ -33,10 +31,9 @@ HEADERS += \
     ssql.h
 
 FORMS += \
+    add_lesson.ui \
     add_score.ui \
     add_student.ui \
-    delete_grade.ui \
-    delete_student.ui \
     lesson_manage_page.ui \
     login_page.ui \
     mainwindow.ui

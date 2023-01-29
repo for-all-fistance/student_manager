@@ -52,7 +52,7 @@ void login_page::on_btn_login_clicked()
     //如果登录成功，发送成功信号
     if(try_login())
     {
-        emit send_login_success_signal();
+        emit send_login_success_signal(ui->login_username->text());
     }
 }
 

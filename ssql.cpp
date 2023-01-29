@@ -106,7 +106,7 @@ int sSql::find_student(QString stu_name)
 QString sSql::find_lesson(int lesson_id)
 {
     QSqlQuery query(mydb);// 用于执行sql语句的对象
-    query.prepare("SELECT * FROM lesson_info WHERE lesson_id = :lesson_id");
+    query.prepare("SELECT * FROM lesson_info WHERE lesson_id=:lesson_id");
     query.bindValue(":lesson_id", lesson_id);//使用 bindValue函数将占位符替换
     if(!query.exec())// 执行sql语句
     {
@@ -131,10 +131,7 @@ QString sSql::find_lesson(int lesson_id)
 int sSql::find_lesson(QString lesson_name,QString year,QString term)
 {
     QSqlQuery query(mydb);// 用于执行sql语句的对象
-    query.prepare("SELECT * FROM lesson_info WHERE "
-                  "lesson_name = :lesson_name "
-                  "year = :year "
-                  "term = :term ");
+    query.prepare("SELECT * FROM lesson_info WHERE lesson_name = :lesson_name AND year = :year AND term = :term");
     query.bindValue(":lesson_name", lesson_name);//使用 bindValue函数将占位符替换
     query.bindValue(":year",year);
     query.bindValue(":term",term);
@@ -207,7 +204,7 @@ bool sSql::calc_performance(int stud_id)
         float avrg=student_average(stud_id);
         QSqlQuery query(mydb);// 用于执行sql语句的对象
         query.prepare("UPDATE student_info SET performance=:performance,average_score=:average_score WHERE stud_id = :stud_id");//要执行的sql语句
-        query.bindValue(":stud_id",query.value("stud_id").toInt());
+        query.bindValue(":stud_id",stud_id);
         if(avrg>=90) query.bindValue(":performance","优");
         else if(avrg>=80)   query.bindValue(":performance","良");
         else if(avrg>=60)   query.bindValue(":performance","合格");
@@ -286,25 +283,63 @@ bool sSql::clac_lesson_summery()
  */
 bool sSql::calc_lesson_summery(int lesson_id)
 {
-        int total_cnt=lesson_total_count(lesson_id);
-        float avrg_score=lesson_average(lesson_id);
-        float pass_rt=lesson_pass_rate(lesson_id);
-        QSqlQuery query(mydb);// 用于执行sql语句的对象
-        query.prepare("UPDATE lesson_info SET total_count=:total_cnt,average_score=:avrg_score,pass_rate=:pass_rt "
-                      "WHERE lesson_id=:lesson_id");//要执行的sql语句
-        query.bindValue(":total_cnt",total_cnt);
-        query.bindValue(":avrg_score",avrg_score);
-        query.bindValue(":pass_rt",pass_rt);
-        query.bindValue(":lesson_id",lesson_id);
-        if(!query.exec())
-        {
-            qDebug() << "Error: in sSql::calc_lesson_summery(int lesson_id). " << query.lastError();
-            return false;
+    float pass_rt=0;
+    float avrg_score=0;
+    int perfect=0;
+    int good=0;
+    int fail=0;
+    int qualified=0;
+    int total_cnt=0;
+    QSqlQuery query(mydb);// 用于执行sql语句的对象
+    query.prepare("SELECT * FROM grade WHERE lesson_id=:lesson_id");//要执行的sql语句
+    query.bindValue(":lesson_id",lesson_id);
+    if(!query.exec())
+    {
+        qDebug() << "Error when trying to find leson:  " << query.lastError();
+        return -1;
+    }
+    else
+    {
+        int pass=0;
+        float sum=0;
+        int count=0;
+        while (query.next()) {
+            float grade=query.value("grade").toFloat();
+            sum+=grade;
+            pass+=grade>=60?1:0;
+            perfect+=grade>=90?1:0;
+            good+=grade>=80&&grade<90?1:0;
+            qualified+=grade>=60&&grade<80?1:0;
+            fail+=grade<60?1:0;
+            count+=1;
         }
-        else
+        if(count!=0)    //成绩不为空
         {
-            return true;
+            pass_rt=float(pass)/count;
+            avrg_score=sum/count;
+            total_cnt=count;
         }
+    }
+    query.prepare("UPDATE lesson_info SET total_count=:total_cnt,average_score=:avrg_score,pass_rate=:pass_rt,"
+                  "perfect=:perfect,good=:good,fail=:fail,qualified=:qualified "
+                  "WHERE lesson_id=:lesson_id");//要执行的sql语句
+    query.bindValue(":total_cnt",total_cnt);
+    query.bindValue(":avrg_score",avrg_score);
+    query.bindValue(":pass_rt",pass_rt*100);
+    query.bindValue(":perfect",perfect);
+    query.bindValue(":good",good);
+    query.bindValue(":fail",fail);
+    query.bindValue(":qualified",qualified);
+    query.bindValue(":lesson_id",lesson_id);
+    if(!query.exec())
+    {
+        qDebug() << "Error: in sSql::calc_lesson_summery(int lesson_id). " << query.lastError();
+        return false;
+    }
+    else
+    {
+        return true;
+    }
 }
 
 
@@ -441,6 +476,44 @@ void sSql::try_add_student(int stud_id,QString stu_name,QString _class)
     if(add_student_base(stud_id,stu_name,_class))
         emit send_student_added_signal();
 }
+
+bool sSql::add_lesson_base(QString lesson_name,int lesson_id,QString year,QString term)
+{
+    QSqlQuery query(mydb);// 用于执行sql语句的对象
+    query.prepare("INSERT INTO lesson_info(lesson_id,lesson_name,year,term) VALUES(:lesson_id,:lesson_name,:year,:term)");
+    query.bindValue(":lesson_id", lesson_id);
+    query.bindValue(":lesson_name", lesson_name);
+    query.bindValue(":year", year);
+    query.bindValue(":term", term);
+    if(!query.exec())
+    {
+        qDebug() << "Error: Fail to add new lesson. " << query.lastError();
+        return false;
+    }
+    else
+    {
+        qDebug()<<"a new lesson added";
+        return true;
+    }
+}
+
+void sSql::try_add_lesson(QString lesson_name,int lesson_id,QString year,QString term)
+{
+    if(add_lesson_base(lesson_name,lesson_id,year,term))
+        emit send_lesson_added_signal();
+}
+
+bool sSql::add_lesson()
+{
+    class add_lesson *new_lesson;
+    new_lesson=new class add_lesson;//创建界面对象
+    new_lesson->setWindowTitle("new lesson");//标题
+    new_lesson->show();
+    connect(new_lesson,SIGNAL(send_new_lesson_signal(QString,int,QString,QString)),this,
+            SLOT(try_add_lesson(QString,int,QString,QString)));//连接信号和槽函数
+    return true;
+}
+
 
 /**
  * @brief sSql::read_all_student
@@ -689,7 +762,7 @@ void sSql::try_add_grade(QString stu_name,QString lesson_name,QString year,QStri
 {
     int stud_id=find_student(stu_name);
     int lesson_id=find_lesson(lesson_name,year,term);
-    if(add_garde_base(stud_id,lesson_id,grade))
+    if(add_garde_base(stud_id,lesson_id,stu_name,lesson_name,grade))
         emit send_grade_added_signal();
     calc_performance(stud_id);
 }
@@ -700,14 +773,14 @@ void sSql::try_add_grade(QString stu_name,QString lesson_name,QString year,QStri
  * @param grade
  * @return
  */
-bool sSql::add_garde_base(int stu_id,int lesson_id,float grade)
+bool sSql::add_garde_base(int stu_id,int lesson_id,QString stu_name,QString lesson_name,float grade)
 {
     QSqlQuery query(mydb);// 用于执行sql语句的对象
-    query.prepare("INSERT INTO grade VALUES (:stud_id,:lesson_id,:stu_name,:lesson_name,:grade)");
+    query.prepare("INSERT INTO grade (stud_id,lesson_id,stu_name,lesson_name,grade) VALUES (:stud_id,:lesson_id,:stu_name,:lesson_name,:grade)");
     query.bindValue(":stud_id",stu_id);
-    query.bindValue("lesson_id",lesson_id);
-    query.bindValue(":stu_name",find_student(stu_id));
-    query.bindValue(":lesson_name",find_lesson(lesson_id));
+    query.bindValue(":lesson_id",lesson_id);
+    query.bindValue(":stu_name",stu_name);
+    query.bindValue(":lesson_name",lesson_name);
     query.bindValue(":grade",grade);
     if(!query.exec())
     {
@@ -745,6 +818,7 @@ bool sSql::check_passwd(QString user_name,QString passwd)
     }
     else if(passwd==query.value("passwd").toString())//找到user且密码正确
     {
+
         qDebug()<<"login success!";
         return true;
     }
@@ -803,9 +877,7 @@ bool sSql::delete_student(QString stu_name)
 bool sSql::delete_grade(int stud_id,int lesson_id)
 {
     QSqlQuery query(mydb);// 用于执行sql语句的对象
-    query.prepare("DELETE FROM grade WHERE "
-                  "stud_id = :stud_id "
-                  "lesson_id = :lesson_id");//要执行的sql语句
+    query.prepare("DELETE FROM grade WHERE stud_id = :stud_id AND lesson_id = :lesson_id");//要执行的sql语句
     query.bindValue(":stud_id",stud_id);
     query.bindValue(":lesson_id",lesson_id);
     if(!query.exec())
@@ -817,6 +889,7 @@ bool sSql::delete_grade(int stud_id,int lesson_id)
     {
         qDebug()<<"grade deleted!";
         calc_performance(stud_id);
+        calc_lesson_summery(lesson_id);
         return true;
     }
 }
@@ -983,6 +1056,7 @@ bool sSql::update(int stud_id,int lesson_id,QString stu_name,QString lesson_name
     {
         qDebug()<<"update success!";
         calc_performance(stud_id);//需要重新计算平均分和优良程度
+        calc_lesson_summery(lesson_id);
         return true;
     }
 }
@@ -1036,6 +1110,7 @@ bool sSql::update(QString stu_name,QString lesson_name,float grade)
     {
         qDebug()<<"update success!";
         calc_performance();//需要重新计算平均分和优良程度
+        calc_lesson_summery(lesson_id);
         return true;
     }
 }

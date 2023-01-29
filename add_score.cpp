@@ -2,6 +2,7 @@
 
 #include "add_score.h"
 #include "ui_add_score.h"
+#include <QMessageBox>
 
 add_score::add_score(QWidget *parent) :
     QWidget(parent),
@@ -15,38 +16,20 @@ add_score::~add_score()
     delete ui;
 }
 
-QString add_score::get_lesson_name()
-{
-    return ui->lesson_name->text();
-}
-
-QString add_score::get_stud_name()
-{
-    return ui->stud_name->text();
-}
-
-float add_score::get_score()
-{
-    return ui->score->text().toFloat();
-}
-
-QString add_score::get_term()
-{
-    return ui->term->text();
-}
-
-QString add_score::get_year()
-{
-    return ui->year->text();
-}
-
 /**
  * @brief add_score::on_new_score_btn_clicked 槽函数，向sql模块发送信号，请求增加新grade对象
  */
 void add_score::on_new_score_btn_clicked()
 {
-    emit send_new_score_signal(ui->stud_name->text(),ui->lesson_name->text(),ui->year->text(),ui->term->text(),ui->score->text().toFloat());
-    close();
+    if(ui->lesson_name->isModified()&&ui->stud_name->isModified()&&ui->year->isModified()&&ui->score->isModified())
+    {
+        emit send_new_score_signal(ui->stud_name->text(),ui->lesson_name->text(),ui->year->text(),ui->term->currentText(),ui->score->text().toFloat());
+        close();
+    }
+    else
+        QMessageBox::critical(this, QObject::tr("not modfied"),
+                              QObject::tr("没有完整的输入，"
+                                          "请输入姓名，课程，学年，学期和成绩来创建一个成绩！"), QMessageBox::Cancel);
 }
 
 /**

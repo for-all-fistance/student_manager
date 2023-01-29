@@ -100,7 +100,7 @@
     </property>
     <layout class="QFormLayout" name="formLayout">
      <item row="0" column="0">
-      <widget class="QLabel" name="username_main">
+      <widget class="QLabel" name="username_lesson">
        <property name="font">
         <font>
          <pointsize>9</pointsize>
@@ -141,17 +141,17 @@
     <string>更改信息</string>
    </property>
    <layout class="QGridLayout" name="gridLayout">
-    <item row="2" column="0">
-     <widget class="QPushButton" name="del_lesson_btn">
+    <item row="1" column="0">
+     <widget class="QPushButton" name="del_btn">
       <property name="text">
-       <string>删除课程</string>
+       <string>删除</string>
       </property>
      </widget>
     </item>
-    <item row="1" column="0">
-     <widget class="QPushButton" name="del_score_btn">
+    <item row="2" column="0">
+     <widget class="QPushButton" name="add_lesson_btn">
       <property name="text">
-       <string>删除成绩</string>
+       <string>新建课程</string>
       </property>
      </widget>
     </item>
@@ -159,13 +159,6 @@
      <widget class="QPushButton" name="add_score_btn">
       <property name="text">
        <string>新建成绩</string>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="0">
-     <widget class="QPushButton" name="add_lesson_btn">
-      <property name="text">
-       <string>新建课程</string>
       </property>
      </widget>
     </item>
@@ -244,9 +237,9 @@
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="pass">
+      <widget class="QLabel" name="qualified">
        <property name="text">
-        <string>及格：</string>
+        <string>合格：</string>
        </property>
       </widget>
      </item>

@@ -52,6 +52,13 @@
      <string>更改信息</string>
     </property>
     <layout class="QGridLayout" name="gridLayout">
+     <item row="2" column="0">
+      <widget class="QPushButton" name="del_btn">
+       <property name="text">
+        <string>删除</string>
+       </property>
+      </widget>
+     </item>
      <item row="0" column="0">
       <widget class="QPushButton" name="add_stu_btn">
        <property name="text">
@@ -60,16 +67,9 @@
       </widget>
      </item>
      <item row="1" column="0">
-      <widget class="QPushButton" name="del_stu_btn">
+      <widget class="QPushButton" name="add_grade_btn">
        <property name="text">
-        <string>删除学生</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="0">
-      <widget class="QPushButton" name="chag_stu_btn">
-       <property name="text">
-        <string>修改学生信息</string>
+        <string>新建成绩</string>
        </property>
       </widget>
      </item>

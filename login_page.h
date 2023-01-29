@@ -28,7 +28,7 @@ private slots:
     void on_btn_quit_clicked();
 
 signals:
-    void send_login_success_signal();
+    void send_login_success_signal(QString user_name);
 
 private:
     Ui::login_page *ui;

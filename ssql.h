@@ -16,9 +16,8 @@
 #include <qmessagebox.h>
 #include "add_student.h"
 #include "add_score.h"
-#include "delete_student.h"
+#include "add_lesson.h"
 #include "qtreewidget.h"
-#include "delete_grade.h"
 
 
 class sSql : public QObject
@@ -36,6 +35,7 @@ public:
     bool search_for_lesson(QString lesson_name,QTreeWidget *widget_to_show);
     bool add_student();
     bool add_grade();
+    bool add_lesson();
     bool check_passwd(QString user_name,QString passwd);
     bool delete_grade(int stud_id,int lesson_id);
     bool delete_grade(QString stu_name,QString lesson_name,QString year,QString term);
@@ -52,7 +52,8 @@ public:
 private:
     QSqlDatabase mydb;
     bool add_student_base(int stud_id,QString stu_name,QString _class);
-    bool add_garde_base(int stu_id,int lesson_id,float grade);
+    bool add_lesson_base(QString lesson_name,int lesson_id,QString year,QString term);
+    bool add_garde_base(int stu_id,int lesson_id,QString stu_name,QString lesson_name,float grade);
     bool create_connection();
     QString find_student(int stud_id);
     int find_student(QString stu_name);
@@ -74,6 +75,7 @@ signals:
 private slots:
     void try_add_student(int stud_id,QString stu_name,QString _class);
     void try_add_grade(QString stu_name,QString lesson_name,QString year,QString term,float grade);
+    void try_add_lesson(QString lesson_name,int lesson_id,QString year,QString term);
     void try_delete_student(int stud_id);
     void try_delete_student(QString stu_name);
     void try_delete_grade(int stud_id,int lesson_id);
