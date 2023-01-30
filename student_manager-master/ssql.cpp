@@ -1191,7 +1191,6 @@ bool sSql::process_line(QString line)
         }
     }
     qDebug()<<list;
-    if(list.size()<3&&list.size()/2!=1) return false;//格式错误
 
     //将数据分类
     QString stu_name=list[0];

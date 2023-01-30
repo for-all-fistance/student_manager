@@ -12,10 +12,8 @@ CONFIG += c++17
 
 SOURCES += \
     add_lesson.cpp \
-    add_lesson.cpp \
     add_score.cpp \
     add_student.cpp \
-    file_browser.cpp \
     file_browser.cpp \
     lesson_manage_page.cpp \
     login_page.cpp \
@@ -25,10 +23,8 @@ SOURCES += \
 
 HEADERS += \
     add_lesson.h \
-    add_lesson.h \
     add_score.h \
     add_student.h \
-    file_browser.h \
     file_browser.h \
     global.h \
     lesson_manage_page.h \
@@ -38,10 +34,8 @@ HEADERS += \
 
 FORMS += \
     add_lesson.ui \
-    add_lesson.ui \
     add_score.ui \
     add_student.ui \
-    file_browser.ui \
     file_browser.ui \
     lesson_manage_page.ui \
     login_page.ui \

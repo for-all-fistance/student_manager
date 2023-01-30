@@ -226,6 +226,5 @@ void MainWindow::on_add_grade_btn_clicked()
 void MainWindow::on_read_file_btn_clicked()
 {
     my_browser=new file_browser();
-    connect(my_browser,SIGNAL(send_file_read_signal()),this,SLOT(refresh()));
 }
 

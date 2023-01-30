@@ -43,7 +43,6 @@ void lesson_manage_page::init()
     connect(&sql_server,SIGNAL(send_student_added_signal()),this,SLOT(refresh()));//当数据发生变化时，刷新页面
     connect(&sql_server,SIGNAL(send_grade_added_signal()),this,SLOT(refresh()));
     connect(&sql_server,SIGNAL(send_lesson_added_signal()),this,SLOT(refresh()));
-
     connect(ui->content,SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
             this,SLOT(qtreewidget_open_editor(QTreeWidgetItem*,int)));//双击编辑
     connect(ui->content,SIGNAL(itemChanged(QTreeWidgetItem*,int)),this,SLOT(qtreewidget_close_editor(QTreeWidgetItem*,int)));//确认编辑
@@ -211,6 +210,5 @@ void lesson_manage_page::qtreewidget_close_editor(QTreeWidgetItem *item,int col)
 void lesson_manage_page::on_read_file_btn_clicked()
 {
     my_browser=new file_browser();
-    connect(my_browser,SIGNAL(send_file_read_signal()),this,SLOT(refresh()));
 }
 
