@@ -25,11 +25,10 @@ void file_browser::init()
     model=new QFileSystemModel();
     model->setNameFilterDisables(false);
     model->setNameFilters(nameFilter);
-//    model->setRootPath(QDir::currentPath());
-    model->setRootPath("C:\\Users\\Li Jialiang\\Desktop\\程序设计课设");
+    model->setRootPath("C:");
 
     ui->my_tree->setModel(model);
-    ui->my_tree->setRootIndex(model->index("C:\\Users\\Li Jialiang\\Desktop\\程序设计课设"));
+    ui->my_tree->setRootIndex(model->index("C:"));
     setWindowTitle("file browser");
 
 
