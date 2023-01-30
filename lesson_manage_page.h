@@ -9,6 +9,7 @@
 #define LESSON_MANAGE_PAGE_H
 
 #include <QWidget>
+#include "file_browser.h"
 #include "global.h"
 #include "ssql.h"
 
@@ -49,6 +50,8 @@ private slots:
     void qtreewidget_open_editor(QTreeWidgetItem *item, int col);
     void qtreewidget_close_editor(QTreeWidgetItem *item,int col);
 
+    void on_read_file_btn_clicked();
+
 signals:
     void send_turn2student_manage_signal();
 
@@ -56,7 +59,7 @@ private:
     Ui::lesson_manage_page *ui;
     void init();
     void set_content();
-    //lesson_summery my_lesson_sum;
+    file_browser *my_browser;
     sSql sql_server;
 };
 

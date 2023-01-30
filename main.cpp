@@ -5,12 +5,14 @@
   *
 */
 #include "mainwindow.h"
+#include "file_browser.h"
 #include <QApplication>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     MainWindow main;
-    lesson_manage_page lesson_manage;
+//    file_browser mybrowser;
+//    mybrowser.show();
     return a.exec();
 }

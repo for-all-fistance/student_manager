@@ -45,11 +45,14 @@ private slots:
 
     void on_add_grade_btn_clicked();
 
+    void on_read_file_btn_clicked();
+
 private:
     Ui::MainWindow *ui;
     void init();
     login_page login;
     lesson_manage_page lesson_manage;
+    file_browser *my_browser;
     sSql sql_server;
 };
 #endif // MAINWINDOW_H

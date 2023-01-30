@@ -141,13 +141,6 @@
     <string>更改信息</string>
    </property>
    <layout class="QGridLayout" name="gridLayout">
-    <item row="1" column="0">
-     <widget class="QPushButton" name="del_btn">
-      <property name="text">
-       <string>删除</string>
-      </property>
-     </widget>
-    </item>
     <item row="2" column="0">
      <widget class="QPushButton" name="add_lesson_btn">
       <property name="text">
@@ -159,6 +152,20 @@
      <widget class="QPushButton" name="add_score_btn">
       <property name="text">
        <string>新建成绩</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QPushButton" name="del_btn">
+      <property name="text">
+       <string>删除</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0">
+     <widget class="QPushButton" name="read_file_btn">
+      <property name="text">
+       <string>读取文件</string>
       </property>
      </widget>
     </item>

@@ -45,7 +45,7 @@
       <x>10</x>
       <y>80</y>
       <width>121</width>
-      <height>151</height>
+      <height>191</height>
      </rect>
     </property>
     <property name="title">
@@ -59,6 +59,13 @@
        </property>
       </widget>
      </item>
+     <item row="1" column="0">
+      <widget class="QPushButton" name="add_grade_btn">
+       <property name="text">
+        <string>新建成绩</string>
+       </property>
+      </widget>
+     </item>
      <item row="0" column="0">
       <widget class="QPushButton" name="add_stu_btn">
        <property name="text">
@@ -66,10 +73,10 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="0">
-      <widget class="QPushButton" name="add_grade_btn">
+     <item row="3" column="0">
+      <widget class="QPushButton" name="read_file_btn">
        <property name="text">
-        <string>新建成绩</string>
+        <string>读取文件</string>
        </property>
       </widget>
      </item>

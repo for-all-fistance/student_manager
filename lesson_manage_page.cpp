@@ -206,3 +206,9 @@ void lesson_manage_page::qtreewidget_close_editor(QTreeWidgetItem *item,int col)
        }
     }
 }
+
+void lesson_manage_page::on_read_file_btn_clicked()
+{
+    my_browser=new file_browser();
+}
+

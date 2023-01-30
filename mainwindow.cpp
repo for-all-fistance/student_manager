@@ -181,7 +181,7 @@ void MainWindow::on_find_stu_btn_clicked()
  */
 void MainWindow::qtreewidget_open_editor(QTreeWidgetItem *item, int col)
 {
-    if(col!=1)//不能修改学号
+    if(col!=1&&col!=3)//不能修改学号和优良等级，前者只能在创建时指定，后者由系统自动计算
         ui->content->openPersistentEditor(item,col);
 }
 
@@ -195,7 +195,7 @@ void MainWindow::qtreewidget_close_editor(QTreeWidgetItem *item,int col)
        ui->content->closePersistentEditor(item,col);
        switch (item->type()) {
        case STUDENT:
-           sql_server.update(item->text(0),item->text(1).toInt(),item->text(2),item->text(3));
+           sql_server.update(item->text(0),item->text(1).toInt(),item->text(2));
            break;
        case GRADE:
            sql_server.update(item->parent()->text(0),item->text(0),item->text(1).toFloat());
@@ -220,5 +220,11 @@ void MainWindow::refresh()
 void MainWindow::on_add_grade_btn_clicked()
 {
     sql_server.add_grade();
+}
+
+
+void MainWindow::on_read_file_btn_clicked()
+{
+    my_browser=new file_browser();
 }
 

@@ -43,17 +43,17 @@ public:
     bool delete_lesson(QString lesson_name,QString year,QString term);
     bool delete_student(int stud_id);
     bool delete_student(QString stu_name);
-    bool update(QString stu_name,int stud_id,QString _class,QString performance);
+    bool update(QString stu_name,int stud_id,QString _class);
     bool update(int stud_id,int lesson_id,QString stu_name,QString lesson_name,float grade);
     bool update(int lesson_id,QString lesson_name,QString year,QString term);
     bool update(QString stu_name,QString lesson_name,float grade);
     QString get(QString table_name,QString target_name,QString key_name,QString key_value);
-
+    bool process_line(QString line);
 private:
     QSqlDatabase mydb;
     bool add_student_base(int stud_id,QString stu_name,QString _class);
     bool add_lesson_base(QString lesson_name,int lesson_id,QString year,QString term);
-    bool add_garde_base(int stu_id,int lesson_id,QString stu_name,QString lesson_name,float grade);
+    bool add_grade_base(int stu_id,int lesson_id,QString stu_name,QString lesson_name,float grade);
     bool create_connection();
     QString find_student(int stud_id);
     int find_student(QString stu_name);
