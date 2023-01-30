@@ -1,7 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>icon_long.png</file>
-        <file>icon_rect.png</file>
-        <file>school_motto.jpg</file>
-    </qresource>
-</RCC>
