@@ -67,7 +67,9 @@ QString sSql::find_student(int stud_id)
     query.bindValue(":stud_id", stud_id);//使用 bindValue函数将占位符替换
     if(!query.exec())// 执行sql语句
     {
-        qDebug() << "Error: Fail to find student. " << query.lastError();
+        QMessageBox::critical(nullptr, QString("error"),
+                              QString("Error: Fail to find student."+query.lastError().text()+
+                              "Click Cancel to exit."), QMessageBox::Cancel);
         return "";
     }
     else if(query.first())
@@ -89,7 +91,9 @@ int sSql::find_student(QString stu_name)
     query.bindValue(":stu_name",stu_name);//使用 bindValue函数将占位符替换
     if(!query.exec())// 执行sql语句
     {
-        qDebug() << "Error: Fail to find student. " << query.lastError();
+        QMessageBox::critical(nullptr, QString("sql error"),
+                              QString("Error: Fail to find student."+query.lastError().text()+
+                                      "\nClick Cancel to exit."), QMessageBox::Cancel);
         return -1;
     }
     else if(query.first())
@@ -113,7 +117,9 @@ QString sSql::find_lesson(int lesson_id)
     query.bindValue(":lesson_id", lesson_id);//使用 bindValue函数将占位符替换
     if(!query.exec())// 执行sql语句
     {
-        qDebug() << "Error: Fail to find lesson. " << query.lastError();
+        QMessageBox::critical(nullptr, QString("sql error"),
+                              QString("Error: Fail to find lesson."+query.lastError().text()+
+                                      "Click Cancel to exit."), QMessageBox::Cancel);
         return "";
     }
     else if(query.first())
@@ -140,7 +146,9 @@ int sSql::find_lesson(QString lesson_name,QString year,QString term)
     query.bindValue(":term",term);
     if(!query.exec())// 执行sql语句
     {
-        qDebug() << "Error: Fail to find lesson. " << query.lastError();
+        QMessageBox::critical(nullptr, QString("sql error"),
+                              QString("Error: Fail to find lesson."+query.lastError().text()+
+                                      "\nClick Cancel to exit."), QMessageBox::Cancel);
         return -1;
     }
     else if(query.first())
@@ -163,7 +171,9 @@ int sSql::find_lesson(QString lesson_name)
     query.bindValue(":lesson_name", lesson_name);//使用 bindValue函数将占位符替换
     if(!query.exec())// 执行sql语句
     {
-        qDebug() << "Error: Fail to find lesson. " << query.lastError();
+        QMessageBox::critical(nullptr, QString("sql error"),
+                              QString("Error: Fail to find lesson."+query.lastError().text()+
+                                      "\nClick Cancel to exit."), QMessageBox::Cancel);
         return -1;
     }
     else if(query.first())
@@ -183,7 +193,9 @@ bool sSql::calc_performance()
     query.prepare("SELECT * FROM student_info");//要执行的sql语句
     if(!query.exec())
     {
-        qDebug() << "Error: fail to find student when calculating perfoemance. " << query.lastError();
+        QMessageBox::critical(nullptr, QString("sql error"),
+                              QString("Error: fail to find student when calculating perfoemance."+query.lastError().text()+
+                                      "\nClick Cancel to exit."), QMessageBox::Cancel);
         return false;
     }
     else
@@ -215,7 +227,9 @@ bool sSql::calc_performance(int stud_id)
         query.bindValue(":average_score",avrg);//更新成绩
         if(!query.exec())
         {
-            qDebug() << "Error: fail to calculate performance of student "+QString(stud_id) << query.lastError();
+            QMessageBox::critical(nullptr, QString("sql error"),
+                                  QString("Error: fail to calculate performance of student."+query.lastError().text()+
+                                          "\nClick Cancel to exit."), QMessageBox::Cancel);
             return false;
         }
         else
@@ -238,7 +252,9 @@ float sSql::student_average(int stud_id)
     query.bindValue(":stud_id",stud_id);
     if(!query.exec())
     {
-        qDebug() << "Error: fail to calculate average score. " << query.lastError();
+        QMessageBox::critical(nullptr, QString("sql error"),
+                              QString("Error: fail to calculate average score."+query.lastError().text()+
+                                      "\nClick Cancel to exit."), QMessageBox::Cancel);
         return -1;
     }
     else
@@ -265,7 +281,9 @@ bool sSql::clac_lesson_summery()
     query.prepare("SELECT * FROM lesson_info");//要执行的sql语句
     if(!query.exec())
     {
-        qDebug() << "Error when trying to calculate lesson summery: . " << query.lastError();
+        QMessageBox::critical(nullptr, QString("sql error"),
+                              QString("Error when trying to calculate lesson summery:"+query.lastError().text()+
+                                      "\nClick Cancel to exit."), QMessageBox::Cancel);
         return false;
     }
     else
@@ -298,7 +316,9 @@ bool sSql::calc_lesson_summery(int lesson_id)
     query.bindValue(":lesson_id",lesson_id);
     if(!query.exec())
     {
-        qDebug() << "Error when trying to find leson:  " << query.lastError();
+        QMessageBox::critical(nullptr, QString("sql error"),
+                              QString("rror when trying to find leson:"+query.lastError().text()+
+                                      "\nClick Cancel to exit."), QMessageBox::Cancel);
         return -1;
     }
     else
@@ -336,7 +356,9 @@ bool sSql::calc_lesson_summery(int lesson_id)
     query.bindValue(":lesson_id",lesson_id);
     if(!query.exec())
     {
-        qDebug() << "Error: in sSql::calc_lesson_summery(int lesson_id). " << query.lastError();
+        QMessageBox::critical(nullptr, QString("sql error"),
+                              QString("Error: in sSql::calc_lesson_summery(int lesson_id)."+query.lastError().text()+
+                                      "\nClick Cancel to exit."), QMessageBox::Cancel);
         return false;
     }
     else
@@ -358,7 +380,9 @@ float sSql::lesson_average(int lesson_id)
     query.bindValue(":lesson_id",lesson_id);
     if(!query.exec())
     {
-        qDebug() << "Error when trying to find leson:  " << query.lastError();
+        QMessageBox::critical(nullptr, QString("sql error"),
+                              QString("Error when trying to find leson:"+query.lastError().text()+
+                                      "\nClick Cancel to exit."), QMessageBox::Cancel);
         return -1;
     }
     else
@@ -387,7 +411,9 @@ int sSql::lesson_total_count(int lesson_id)
     query.bindValue(":lesson_id",lesson_id);
     if(!query.exec())
     {
-        qDebug() << "Error when trying to find leson:  " << query.lastError();
+        QMessageBox::critical(nullptr, QString("sql error"),
+                              QString("Error when trying to find leson:"+query.lastError().text()+
+                                      "\nClick Cancel to exit."), QMessageBox::Cancel);
         return -1;
     }
     else
@@ -409,7 +435,9 @@ float sSql::lesson_pass_rate(int lesson_id)
     query.bindValue(":lesson_id",lesson_id);
     if(!query.exec())
     {
-        qDebug() << "Error when trying to find leson:  " << query.lastError();
+        QMessageBox::critical(nullptr, QString("sql error"),
+                              QString("Error when trying to find leson:"+query.lastError().text()+
+                                      "\nClick Cancel to exit."), QMessageBox::Cancel);
         return -1;
     }
     else
@@ -442,7 +470,9 @@ bool sSql::add_student_base(int stud_id,QString stu_name,QString _class)
     query.bindValue(":class", _class);
     if(!query.exec())
     {
-        qDebug() << "Error: Fail to add new student. " << query.lastError();
+        QMessageBox::critical(nullptr, QString("sql error"),
+                              QString("Error: Fail to add new student."+query.lastError().text()+
+                                      "\nClick Cancel to exit."), QMessageBox::Cancel);
         return false;
     }
     else
@@ -490,7 +520,9 @@ bool sSql::add_lesson_base(QString lesson_name,int lesson_id,QString year,QStrin
     query.bindValue(":term", term);
     if(!query.exec())
     {
-        qDebug() << "Error: Fail to add new lesson. " << query.lastError();
+        QMessageBox::critical(nullptr, QString("sql error"),
+                              QString("Error: Fail to add new lesson."+query.lastError().text()+
+                                      "\nClick Cancel to exit."), QMessageBox::Cancel);
         return false;
     }
     else
@@ -536,7 +568,9 @@ bool sSql::read_all_student(QTreeWidget *content)
     query.prepare("SELECT * FROM student_info");
     if(!query.exec())
     {
-        qDebug() << "Error: Fail to query table. " << query.lastError();
+        QMessageBox::critical(nullptr, QString("sql error"),
+                              QString("Error: Fail to query table."+query.lastError().text()+
+                                      "\nClick Cancel to exit."), QMessageBox::Cancel);
         return false;
     }
     else
@@ -589,7 +623,9 @@ bool sSql::read_all_lesson(QTreeWidget *content)
     query.prepare("SELECT * FROM lesson_info");
     if(!query.exec())
     {
-        qDebug() << "Error: Fail to query table. " << query.lastError();
+        QMessageBox::critical(nullptr, QString("sql error"),
+                              QString("Error: Fail to query table."+query.lastError().text()+
+                                      "\nClick Cancel to exit."), QMessageBox::Cancel);
         return false;
     }
     else
@@ -649,7 +685,9 @@ bool sSql::search_for_student(QString stu_name,QTreeWidget *widget_to_show)
     query.bindValue(":stu_name",stu_name);
     if(!query.exec())
     {
-        qDebug() << "Error: fail to find student. " << query.lastError();
+        QMessageBox::critical(nullptr, QString("sql error"),
+                              QString("Error: fail to find student."+query.lastError().text()+
+                                      "\nClick Cancel to exit."), QMessageBox::Cancel);
         return false;
     }
     else
@@ -704,7 +742,9 @@ bool sSql::search_for_lesson(QString lesson_name,QTreeWidget *widget_to_show)
     query.bindValue(":lesson_name",lesson_name);
     if(!query.exec())
     {
-        qDebug() << "Error: fail to find student. " << query.lastError();
+        QMessageBox::critical(nullptr, QString("sql error"),
+                              QString("Error: fail to find student. "+query.lastError().text()+
+                                      "\nClick Cancel to exit."), QMessageBox::Cancel);
         return false;
     }
     else
@@ -798,7 +838,9 @@ bool sSql::add_grade_base(int stu_id,int lesson_id,QString stu_name,QString less
     query.bindValue(":grade",grade);
     if(!query.exec())
     {
-        qDebug() << "Error: fail to add new score. " << query.lastError();
+        QMessageBox::critical(nullptr, QString("sql error"),
+                              QString("Error: fail to add new score. "+query.lastError().text()+
+                                      "\nClick Cancel to exit."), QMessageBox::Cancel);
         return false;
     }
     else
@@ -822,7 +864,6 @@ bool sSql::check_passwd(QString user_name,QString passwd)
     query.exec();
     if(!query.first())//没有找到user
     {
-        qDebug() << "Error: user not found" << query.lastError();
         QMessageBox::critical(nullptr, QObject::tr("error"),
                               QObject::tr("user not found\n"
                                           "Click Cancel to exit."), QMessageBox::Cancel);
@@ -856,7 +897,9 @@ bool sSql::delete_student(int stud_id)
     query.bindValue(":stud_id",stud_id);
     if(!query.exec())
     {
-        qDebug() << "Error: fail to delete student. " << query.lastError();
+        QMessageBox::critical(nullptr, QString("sql error"),
+                              QString("Error: fail to delete student."+query.lastError().text()+
+                                      "\nClick Cancel to exit."), QMessageBox::Cancel);
         return false;
     }
     else
@@ -894,7 +937,9 @@ bool sSql::delete_grade(int stud_id,int lesson_id)
     query.bindValue(":lesson_id",lesson_id);
     if(!query.exec())
     {
-        qDebug() << "Error: fail to delete grade. " << query.lastError();
+        QMessageBox::critical(nullptr, QString("sql error"),
+                              QString("Error: fail to delete grade. "+query.lastError().text()+
+                                      "\nClick Cancel to exit."), QMessageBox::Cancel);
         return false;
     }
     else
@@ -936,7 +981,9 @@ bool sSql::delete_lesson(int lesson_id)
     query.bindValue(":lesson_id",lesson_id);
     if(!query.exec())
     {
-        qDebug() << "Error: fail to delete lesson. " << query.lastError();
+        QMessageBox::critical(nullptr, QString("sql error"),
+                              QString("Error: fail to delete lesson."+query.lastError().text()+
+                                      "\nClick Cancel to exit."), QMessageBox::Cancel);
         return false;
     }
     else
@@ -1029,7 +1076,9 @@ bool sSql::update(QString stu_name,int stud_id,QString _class)
     query.bindValue(":stud_id",stud_id);
     if(!query.exec())
     {
-        qDebug() << "Error: fail to update. " << query.lastError();
+        QMessageBox::critical(nullptr, QString("sql error"),
+                              QString("Error: fail to update."+query.lastError().text()+
+                                      "\nClick Cancel to exit."), QMessageBox::Cancel);
         return false;
     }
     else
@@ -1059,7 +1108,9 @@ bool sSql::update(int stud_id,int lesson_id,QString stu_name,QString lesson_name
     query.bindValue(":lesson_id",lesson_id);
     if(!query.exec())
     {
-        qDebug() << "Error: fail to update. " << query.lastError();
+        QMessageBox::critical(nullptr, QString("sql error"),
+                              QString("Error: fail to update."+query.lastError().text()+
+                                      "\nClick Cancel to exit."), QMessageBox::Cancel);
         return false;
     }
     else
@@ -1113,7 +1164,9 @@ bool sSql::update(QString stu_name,QString lesson_name,float grade)
 
     if(!query.exec())
     {
-        qDebug() << "Error: fail to update. " << query.lastError();
+        QMessageBox::critical(nullptr, QString("sql error"),
+                              QString("Error: fail to update."+query.lastError().text()+
+                                      "\nClick Cancel to exit."), QMessageBox::Cancel);
         return false;
     }
     else
@@ -1143,7 +1196,9 @@ bool sSql::update(int lesson_id,QString lesson_name,QString year,QString term)
     query.bindValue(":lesson_id",lesson_id);
     if(!query.exec())
     {
-        qDebug() << "Error: fail to update. " << query.lastError();
+        QMessageBox::critical(nullptr, QString("sql error"),
+                              QString("Error: fail to update."+query.lastError().text()+
+                                      "\nClick Cancel to exit."), QMessageBox::Cancel);
         return false;
     }
     else
@@ -1167,7 +1222,9 @@ QString sSql::get(QString table_name,QString target_name,QString key_name,QStrin
     query.prepare("SELECT * FROM "+table_name+" WHERE "+key_name+"="+key_value);//要执行的sql语句
     if(!query.exec())
     {
-        qDebug() << "Error: fail to get value. " << query.lastError();
+        QMessageBox::critical(nullptr, QString("sql error"),
+                              QString("Error: fail to get value."+query.lastError().text()+
+                                      "\nClick Cancel to exit."), QMessageBox::Cancel);
         return "";
     }
     else

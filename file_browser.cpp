@@ -76,7 +76,7 @@ bool file_browser::read(QString path)
         while (!stream.atEnd())
         {
             QString line = stream.readLine();
-            qDebug()<<line;
+            //qDebug()<<line;
 
             sql_server=new sSql();
             if(!sql_server->process_line(line))
