@@ -2,7 +2,7 @@
   * @file    mainwindow.h
   * @author  Jialiang Li
   * @brief   class: MainWindow
-  *          info:  main window contains others page as its member,
+  *          info:  主页面，也充当学生信息管理的页面
   *
 */
 #ifndef MAINWINDOW_H

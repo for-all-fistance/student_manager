@@ -8,6 +8,9 @@
 
 #include "ssql.h"
 #include "global.h"
+#include "add_student.h"
+#include "add_score.h"
+#include "add_lesson.h"
 
 /**
  * @brief size 获得一个QSqlQuery中数据的条数
@@ -497,6 +500,13 @@ bool sSql::add_lesson_base(QString lesson_name,int lesson_id,QString year,QStrin
     }
 }
 
+/**
+ * @brief sSql::try_add_lesson 尝试添加课程
+ * @param lesson_name
+ * @param lesson_id
+ * @param year
+ * @param term
+ */
 void sSql::try_add_lesson(QString lesson_name,int lesson_id,QString year,QString term)
 {
     if(add_lesson_base(lesson_name,lesson_id,year,term))
@@ -516,8 +526,9 @@ bool sSql::add_lesson()
 
 
 /**
- * @brief sSql::read_all_student
- * @return true if success.
+ * @brief sSql::read_all_student 读取所有的学生信息，在QTreeWidget中显示
+ * @param content
+ * @return true for success
  */
 bool sSql::read_all_student(QTreeWidget *content)
 {
@@ -568,9 +579,9 @@ bool sSql::read_all_student(QTreeWidget *content)
 }
 
 /**
- * @brief sSql::read_all_lesson
+ * @brief sSql::read_all_lesson 读取所有的课程信息，并在QTreeWidget中显示
  * @param content
- * @return
+ * @return true for success
  */
 bool sSql::read_all_lesson(QTreeWidget *content)
 {
@@ -625,10 +636,10 @@ bool sSql::read_all_lesson(QTreeWidget *content)
 }
 
 /**
- * @brief sSql::search_for_student
+ * @brief sSql::search_for_student 搜索学生，并在QTreeWidget中显示
  * @param stu_name
  * @param widget_to_show
- * @return
+ * @return true for success
  */
 bool sSql::search_for_student(QString stu_name,QTreeWidget *widget_to_show)
 {
@@ -681,10 +692,10 @@ bool sSql::search_for_student(QString stu_name,QTreeWidget *widget_to_show)
 }
 
 /**
- * @brief sSql::search_for_lesson
+ * @brief sSql::search_for_lesson 搜索课程，并在QTreeWidget中显示
  * @param lesson_name
  * @param widget_to_show
- * @return
+ * @return tree for success
  */
 bool sSql::search_for_lesson(QString lesson_name,QTreeWidget *widget_to_show)
 {
@@ -739,7 +750,7 @@ bool sSql::search_for_lesson(QString lesson_name,QTreeWidget *widget_to_show)
 
 
 /**
- * @brief sSql::add_grade
+ * @brief sSql::add_grade 唤起一个add_grade页面来创建成绩信息
  * @return
  */
 bool sSql::add_grade()
@@ -770,7 +781,7 @@ void sSql::try_add_grade(QString stu_name,QString lesson_name,QString year,QStri
     calc_performance(stud_id);
 }
 /**
- * @brief sSql::add_garde_base
+ * @brief sSql::add_garde_base 向数据库中添加成绩
  * @param stu_id
  * @param lesson_id
  * @param grade
@@ -798,10 +809,10 @@ bool sSql::add_grade_base(int stu_id,int lesson_id,QString stu_name,QString less
 }
 
 /**
- * @brief sSql::check_passwd
+ * @brief sSql::check_passwd 确认账号密码是否正确
  * @param user_name
  * @param passwd
- * @return
+ * @return true for correct
  */
 bool sSql::check_passwd(QString user_name,QString passwd)
 {
@@ -809,9 +820,7 @@ bool sSql::check_passwd(QString user_name,QString passwd)
     query.prepare("SELECT * FROM users WHERE user_id = :user_id");
     query.bindValue(":user_id",user_name);
     query.exec();
-    int s=query.at();
-    query.next();
-    if(s==-2)//没有找到user
+    if(!query.first())//没有找到user
     {
         qDebug() << "Error: user not found" << query.lastError();
         QMessageBox::critical(nullptr, QObject::tr("error"),
@@ -837,7 +846,7 @@ bool sSql::check_passwd(QString user_name,QString passwd)
 /**
  * @brief sSql::delete_student 删除学号为stud_id的学生
  * @param stud_id 要删除学生的学号
- * @return
+ * @return true for success
  */
 bool sSql::delete_student(int stud_id)
 {
@@ -860,7 +869,7 @@ bool sSql::delete_student(int stud_id)
 /**
  * @brief sSql::delete_student 重载，删除姓名为stu_name的学生
  * @param stu_name 姓名
- * @return
+ * @return true for success
  */
 bool sSql::delete_student(QString stu_name)
 {
@@ -875,7 +884,7 @@ bool sSql::delete_student(QString stu_name)
  * @brief sSql::delete_grade 删除，学号为stud_id的学生，课程ID为lesson_id的成绩
  * @param stud_id 学号
  * @param lesson_id 课程ID
- * @return
+ * @return true for success
  */
 bool sSql::delete_grade(int stud_id,int lesson_id)
 {
@@ -903,7 +912,7 @@ bool sSql::delete_grade(int stud_id,int lesson_id)
  * @param lesson_name
  * @param year
  * @param term
- * @return
+ * @return true for success
  */
 bool sSql::delete_grade(QString stu_name,QString lesson_name,QString year,QString term)
 {
@@ -918,7 +927,7 @@ bool sSql::delete_grade(QString stu_name,QString lesson_name,QString year,QStrin
 /**
  * @brief sSql::delete_lesson 删除ID为lesson_id的课程
  * @param lesson_id
- * @return true if success
+ * @return true for success
  */
 bool sSql::delete_lesson(int lesson_id)
 {
@@ -942,7 +951,7 @@ bool sSql::delete_lesson(int lesson_id)
  * @param lesson_name
  * @param year
  * @param term
- * @return
+ * @return true for success
  */
 bool sSql::delete_lesson(QString lesson_name,QString year,QString term)
 {
@@ -1009,7 +1018,7 @@ void sSql::try_delete_grade(QString stu_name,QString lesson_name,QString year,QS
  * @param stud_id
  * @param _class
  * @param performance
- * @return
+ * @return true for sucsess
  */
 bool sSql::update(QString stu_name,int stud_id,QString _class)
 {
@@ -1037,7 +1046,7 @@ bool sSql::update(QString stu_name,int stud_id,QString _class)
  * @param stu_name
  * @param lesson_name
  * @param grade
- * @return
+ * @return true for sucsess
  */
 bool sSql::update(int stud_id,int lesson_id,QString stu_name,QString lesson_name,float grade)
 {
@@ -1069,7 +1078,7 @@ bool sSql::update(int stud_id,int lesson_id,QString stu_name,QString lesson_name
  * @param grade
  * @param year
  * @param term
- * @return
+ * @return true for sucsess
  */
 bool sSql::update(QString stu_name,QString lesson_name,float grade)
 {
@@ -1122,7 +1131,7 @@ bool sSql::update(QString stu_name,QString lesson_name,float grade)
  * @param lesson_name
  * @param year
  * @param term
- * @return
+ * @return true for sucsess
  */
 bool sSql::update(int lesson_id,QString lesson_name,QString year,QString term)
 {
@@ -1173,7 +1182,7 @@ QString sSql::get(QString table_name,QString target_name,QString key_name,QStrin
 /**
  * @brief sSql::process_line 处理从文本中获得的一行文字
  * @param line
- * @return
+ * @return true for success
  */
 bool sSql::process_line(QString line)
 {
@@ -1191,7 +1200,7 @@ bool sSql::process_line(QString line)
         }
     }
     qDebug()<<list;
-    if(list.size()<3&&list.size()/2!=1) return false;//格式错误
+    if(list.size()<3||list.size()/2!=1) return false;//格式错误
 
     //将数据分类
     QString stu_name=list[0];

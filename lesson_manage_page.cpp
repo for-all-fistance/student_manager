@@ -1,7 +1,7 @@
 ﻿/******************************************************************************
   * @file    lesson_manage_page.cpp
   * @author  Jialiang Li
-  * @brief   member function of class lesson_manage_page, which is created to manage the info of one lesson, including all the students and their info.
+  * @brief   member function of class lesson_manage_page, which is created to manage the info of each lesson, including all the students and their info.
   *
 */
 #pragma execution_character_set("utf-8")
@@ -9,11 +9,6 @@
 #include "lesson_manage_page.h"
 #include "ui_lesson_manage_page.h"
 
-/**
-  * @brief  课程信息管理页面构造函数
-  * @param
-  * @retval
-  */
 lesson_manage_page::lesson_manage_page(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::lesson_manage_page)
@@ -22,21 +17,14 @@ lesson_manage_page::lesson_manage_page(QWidget *parent) :
     init();
 }
 
-/**
-  * @brief  课程信息管理页面析构函数
-  * @param
-  * @retval
-  */
 lesson_manage_page::~lesson_manage_page()
 {
     delete ui;
 }
 
 /**
-  * @brief  初始化课程信息界面，并创建login_page和mainwindow之间的逻辑连接
-  * @param
-  * @retval
-  */
+ * @brief lesson_manage_page::init 初始化课程信息界面，并创建login_page和mainwindow之间的逻辑连接
+ */
 void lesson_manage_page::init()
 {
     //connect(ui->turn2student_manage,SIGNAL(clicked(bool)),this,SLOT(do_process_turn2student_manage_signal()));
@@ -52,10 +40,8 @@ void lesson_manage_page::init()
 }
 
 /**
-  * @brief  显示课程信息
-  * @param
-  * @retval
-  */
+ * @brief lesson_manage_page::set_content 整理QTreeWidget窗口
+ */
 void lesson_manage_page::set_content()
 {
     ui->content->clear();
@@ -64,32 +50,23 @@ void lesson_manage_page::set_content()
     ui->content->update();
 }
 
-/**
-  * @brief  转到学生管理页按钮
-  * @param
-  * @retval
-  */
 void lesson_manage_page::on_turn2student_manage_clicked()
 {
-    this->hide();
+    this->close();
     emit send_turn2student_manage_signal();
 }
 
 /**
-  * @brief  响应从课程管理页面回到学生管理页面的事件，关闭课程信息页面
-  * @param
-  * @retval
-  */
+ * @brief lesson_manage_page::do_process_turn2student_manage_signal 响应从课程管理页面回到学生管理页面的事件，关闭课程信息页面
+ */
 void lesson_manage_page::do_process_turn2student_manage_signal()
 {
-    this->hide();
+    this->close();
 }
 
 /**
-  * @brief  从课程信息页面退出
-  * @param
-  * @retval
-  */
+ * @brief lesson_manage_page::on_btn_exit_clicked 从课程信息页面退出，关闭程序
+ */
 void lesson_manage_page::on_btn_exit_clicked()
 
 {
@@ -97,28 +74,21 @@ void lesson_manage_page::on_btn_exit_clicked()
 }
 
 
-
-/**
- * @brief lesson_manage_page::on_add_score_btn_clicked
- */
 void lesson_manage_page::on_add_score_btn_clicked()
 {
     sql_server.add_grade();
 }
 
-
+/**
+ * @brief lesson_manage_page::on_find_stu_clicked 点击搜索按钮，如果搜索框内有内容，就搜索
+ */
 void lesson_manage_page::on_find_stu_clicked()
 {
-    if(ui->search_bar_lesson->isModified())
+    if(ui->search_bar_lesson->isModified())//填入了内容
     {
-        ui->content->clear();
         sql_server.search_for_lesson(ui->search_bar_lesson->text(),ui->content);
-        ui->content->update();
     }
-    else
-    {
-        refresh();
-    }
+    refresh();
 }
 
 /**
@@ -159,7 +129,9 @@ void lesson_manage_page::refresh()
     set_content();
 }
 
-
+/**
+ * @brief lesson_manage_page::on_del_btn_clicked 删除选中的项
+ */
 void lesson_manage_page::on_del_btn_clicked()
 {
     QList<QTreeWidgetItem*> selectedItems=ui->content->selectedItems();
@@ -178,17 +150,31 @@ void lesson_manage_page::on_del_btn_clicked()
     refresh();
 }
 
+/**
+ * @brief lesson_manage_page::do_process_login_request 在窗口右上角显示用户名
+ * @param user_name
+ */
 void lesson_manage_page::do_process_login_request(QString user_name)
 {
     ui->username_lesson->setText(user_name);
 }
 
+/**
+ * @brief lesson_manage_page::qtreewidget_open_editor 双击编辑
+ * @param item
+ * @param col
+ */
 void lesson_manage_page::qtreewidget_open_editor(QTreeWidgetItem *item, int col)
 {
     if(col!=1)//不能修改课程号
         ui->content->openPersistentEditor(item,col);
 }
 
+/**
+ * @brief lesson_manage_page::qtreewidget_close_editor 退出编辑并更新数据
+ * @param item
+ * @param col
+ */
 void lesson_manage_page::qtreewidget_close_editor(QTreeWidgetItem *item,int col)
 {
     if(item!=NULL)
@@ -199,7 +185,6 @@ void lesson_manage_page::qtreewidget_close_editor(QTreeWidgetItem *item,int col)
            sql_server.update(item->text(1).toInt(),item->text(0),item->text(2),item->text(3));
            break;
        case GRADE:
-           qDebug()<<item->text(1).toInt()<<item->parent()->text(1)<<item->parent()->text(2)<<item->parent()->text(3);
            sql_server.update(item->text(1).toInt(),item->parent()->text(1).toInt(),item->text(0),item->parent()->text(0),item->text(2).toFloat());
            break;
        default:

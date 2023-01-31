@@ -1,4 +1,10 @@
-﻿#ifndef ADD_SCORE_H
+﻿/******************************************************************************
+  * @file    add_score.h
+  * @author  Jialiang Li
+  * @brief   add_score类，用来添加成绩信息
+  *
+*/
+#ifndef ADD_SCORE_H
 #define ADD_SCORE_H
 
 #include <QWidget>
@@ -17,9 +23,7 @@ public:
 
 private slots:
     void on_new_score_btn_clicked();
-
     void on_cancel_clicked();
-
 private:
     Ui::add_score *ui;
 signals:

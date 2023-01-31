@@ -1,4 +1,10 @@
-﻿#ifndef FILE_BROWSER_H
+﻿/******************************************************************************
+  * @file    file_browser.h
+  * @author  Jialiang Li
+  * @brief   对文件进行操作的页面，选中目标文件并读取
+  *
+*/
+#ifndef FILE_BROWSER_H
 #define FILE_BROWSER_H
 
 #include "qfilesystemmodel.h"

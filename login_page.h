@@ -32,7 +32,6 @@ signals:
 
 private:
     Ui::login_page *ui;
-    void init();
     sSql sql_server;
     bool try_login();
 };

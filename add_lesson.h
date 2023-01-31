@@ -1,4 +1,10 @@
-﻿#ifndef ADD_LESSON_H
+﻿/******************************************************************************
+  * @file    add_lesson.h
+  * @author  Jialiang Li
+  * @brief   add_lesson类，用来添加课程信息
+  *
+*/
+#ifndef ADD_LESSON_H
 #define ADD_LESSON_H
 
 #include <QWidget>

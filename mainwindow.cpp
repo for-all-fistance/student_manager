@@ -16,11 +16,6 @@
 #include "global.h"
 
 MainWindow::MainWindow(QWidget *parent)
-/**
-  * @brief  主界面构造函数
-  * @param
-  * @retval
-  */
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
@@ -29,21 +24,14 @@ MainWindow::MainWindow(QWidget *parent)
 }
 
 MainWindow::~MainWindow()
-/**
-  * @brief  主界面析构函数
-  * @param
-  * @retval
-  */
 {
     delete ui;
 }
 
-void MainWindow::init()
 /**
-  * @brief  初始化登陆界面，并创建login_page，lesson_manage_page槽之间的逻辑连接
-  * @param
-  * @retval
-  */
+ * @brief MainWindow::init 初始化登陆界面，并创建login_page，lesson_manage_page槽之间的逻辑连接
+ */
+void MainWindow::init()
 {
     login.show();//显示登录界面
     set_content();
@@ -59,12 +47,11 @@ void MainWindow::init()
 
 }
 
-void MainWindow::do_process_login_request(QString user_name)
 /**
-  * @brief  响应登录事件
-  * @param
-  * @retval
-  */
+ * @brief MainWindow::do_process_login_request 响应登录信号
+ * @param user_name
+ */
+void MainWindow::do_process_login_request(QString user_name)
 {
 
     login.close();
@@ -73,33 +60,23 @@ void MainWindow::do_process_login_request(QString user_name)
 }
 
 void MainWindow::on_btn_exit_clicked()
-/**
-  * @brief  主界面退出按钮
-  * @param
-  * @retval
-  */
 {
     exit(0);
 }
 
-
-void MainWindow::on_btn_relogin_clicked()
 /**
-  * @brief  重新登录按钮，退出主界面，打开登录界面
-  * @param
-  * @retval
-  */
+ * @brief MainWindow::on_btn_relogin_clicked 重新登录按钮，退出主界面，打开登录界面
+ */
+void MainWindow::on_btn_relogin_clicked()
 {
     login.show();
     this->hide();
 }
 
-void MainWindow::set_content()
 /**
-  * @brief  设置主界面信息
-  * @param
-  * @retval
-  */
+ * @brief MainWindow::set_content 整理QTreeWidget窗口
+ */
+void MainWindow::set_content()
 {
     ui->content->clear();
     ui->content->setSelectionMode(QAbstractItemView::MultiSelection);
@@ -109,22 +86,15 @@ void MainWindow::set_content()
 
 
 void MainWindow::on_turn2lesson_manage_clicked()
-/**
-  * @brief  转到课程管理界面
-  * @param
-  * @retval
-  */
 {
     this->hide();
     lesson_manage.show();
 }
 
-void MainWindow::do_process_turn_back_request()
 /**
-  * @brief  响应回到学生管理页面的事件，显示学生管理页面
-  * @param
-  * @retval
-  */
+ * @brief MainWindow::do_process_turn_back_request 响应回到学生管理页面的事件，显示学生管理页面
+ */
+void MainWindow::do_process_turn_back_request()
 {
     refresh();
     show();
@@ -216,13 +186,14 @@ void MainWindow::refresh()
 }
 
 
-
 void MainWindow::on_add_grade_btn_clicked()
 {
     sql_server.add_grade();
 }
 
-
+/**
+ * @brief MainWindow::on_read_file_btn_clicked 唤起一个file browser页面来读取文件
+ */
 void MainWindow::on_read_file_btn_clicked()
 {
     my_browser=new file_browser();

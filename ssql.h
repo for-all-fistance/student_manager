@@ -14,9 +14,6 @@
 #include <QDebug>
 #include <QErrorMessage>
 #include <qmessagebox.h>
-#include "add_student.h"
-#include "add_score.h"
-#include "add_lesson.h"
 #include "qtreewidget.h"
 
 

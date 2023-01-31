@@ -1,7 +1,7 @@
 ﻿/******************************************************************************
   * @file    add_student.h
   * @author  Jialiang Li
-  * @brief   添加学生的窗口
+  * @brief   add_student类，用来添加学生信息
   *
 */
 #ifndef ADD_STUDENT_H
@@ -20,9 +20,6 @@ class add_student : public QWidget
 public:
     explicit add_student(QWidget *parent = nullptr);
     ~add_student();
-    QString get_name();
-    int get_id();
-    QString get_class();
 private slots:
 
     void on_new_stud_btn_clicked();
@@ -31,7 +28,6 @@ private slots:
 
 signals:
     void send_new_student_signal(int stud_id,QString stu_name,QString _class);
-    void send_cancel_signal();
 private:
     Ui::add_student *ui;
     int score_count=0;

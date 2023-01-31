@@ -1,4 +1,10 @@
-﻿#pragma execution_character_set("utf-8")
+﻿/******************************************************************************
+  * @file    file_browser.cpp
+  * @author  Jialiang Li
+  * @brief   file_browser类的具体实现
+  *
+*/
+#pragma execution_character_set("utf-8")
 
 #include "qdebug.h"
 #include "file_browser.h"
@@ -17,6 +23,9 @@ file_browser::~file_browser()
     delete ui;
 }
 
+/**
+ * @brief file_browser::init 初始化页面，并定位在C盘。
+ */
 void file_browser::init()
 {
     QStringList nameFilter;
@@ -36,6 +45,9 @@ void file_browser::init()
 
 }
 
+/**
+ * @brief file_browser::on_read_btn_clicked 点击确认按钮，开始读取目标文件
+ */
 void file_browser::on_read_btn_clicked()
 {
     QModelIndex index = ui->my_tree->currentIndex();
@@ -48,14 +60,14 @@ void file_browser::on_read_btn_clicked()
 }
 
 /**
- * @brief file_browser::read
+ * @brief file_browser::read 读取目标文件，并交给数据库保存
  * @param path
  * @return
  */
 bool file_browser::read(QString path)
 {
     if (path.isEmpty())     //如果未选择文件便确认，即返回
-        return true;
+        return false;
     QFile file(path);
     if (file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
@@ -69,7 +81,10 @@ bool file_browser::read(QString path)
             sql_server=new sSql();
             if(!sql_server->process_line(line))
             {
-
+                QMessageBox::critical(this, QObject::tr("snytex error"),
+                                      "格式错误："
+                                      +line+
+                                      "\nClick Cancel to exit.", QMessageBox::Cancel);
             }
         }
         file.close();

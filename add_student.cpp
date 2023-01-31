@@ -23,34 +23,6 @@ add_student::~add_student()
 }
 
 /**
- * @brief add_student::get_id
- * @return input stud_id
- */
-int add_student::get_id()
-{
-    return ui->stud_id->text().toInt();
-}
-
-/**
- * @brief add_student::get_name
- * @return input stud_name
- */
-QString add_student::get_name()
-{
-    return ui->stud_name->text();
-}
-
-/**
- * @brief add_student::get_class
- * @return input class
- */
-QString add_student::get_class()
-{
-    return ui->class_->text();
-}
-
-
-/**
  * @brief add_student::on_new_stud_btn_clicked
  */
 void add_student::on_new_stud_btn_clicked()
