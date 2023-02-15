@@ -1,12 +1,12 @@
-﻿/******************************************************************************
+/******************************************************************************
   * @file    mainwindow.h
   * @author  Jialiang Li
   * @brief   class: MainWindow
   *          info:  主页面，也充当学生信息管理的页面
   *
 */
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef STUDENT_MANAGE_PAGE_H
+#define STUDENT_MANAGE_PAGE_H
 
 #include "login_page.h"
 #include "lesson_manage_page.h"
@@ -17,13 +17,13 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
-class MainWindow : public QMainWindow
+class student_manage_page : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
-    ~MainWindow();
+    student_manage_page(QWidget *parent = nullptr);
+    ~student_manage_page();
 
 private slots:
     void on_btn_exit_clicked();
@@ -55,4 +55,4 @@ private:
     file_browser *my_browser;
     sSql sql_server;
 };
-#endif // MAINWINDOW_H
+#endif // STUDENT_MANAGE_PAGE_H

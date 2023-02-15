@@ -1214,7 +1214,7 @@ bool sSql::update(int lesson_id,QString lesson_name,QString year,QString term)
  * @param target_name 目标变量名
  * @param key_name 主键数据字段名
  * @param key_value 主键数据字段值
- * @return 以QString格式返回目标值
+ * @return 以QString格式返回目标值,获取失败返回空串
  */
 QString sSql::get(QString table_name,QString target_name,QString key_name,QString key_value)
 {

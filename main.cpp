@@ -4,13 +4,13 @@
   * @brief   main function
   *
 */
-#include "mainwindow.h"
+#include "student_manage_page.h"
 #include "file_browser.h"
 #include <QApplication>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    MainWindow main;
+    student_manage_page main;
     return a.exec();
 }

@@ -20,8 +20,8 @@ SOURCES += \
     lesson_manage_page.cpp \
     login_page.cpp \
     main.cpp \
-    mainwindow.cpp \
-    ssql.cpp
+    ssql.cpp \
+    student_manage_page.cpp
 
 HEADERS += \
     add_lesson.h \
@@ -33,8 +33,8 @@ HEADERS += \
     global.h \
     lesson_manage_page.h \
     login_page.h \
-    mainwindow.h \
-    ssql.h
+    ssql.h \
+    student_manage_page.h
 
 FORMS += \
     add_lesson.ui \

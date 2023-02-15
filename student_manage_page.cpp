@@ -6,7 +6,7 @@
 */
 #pragma execution_character_set("utf-8")
 
-#include "mainwindow.h"
+#include "student_manage_page.h"
 #include "ui_mainwindow.h"
 #include <QWidget>
 #include <QTreeWidget>
@@ -15,7 +15,7 @@
 #include <QTableWidget>
 #include "global.h"
 
-MainWindow::MainWindow(QWidget *parent)
+student_manage_page::student_manage_page(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
@@ -23,7 +23,7 @@ MainWindow::MainWindow(QWidget *parent)
     init();
 }
 
-MainWindow::~MainWindow()
+student_manage_page::~student_manage_page()
 {
     delete ui;
 }
@@ -31,7 +31,7 @@ MainWindow::~MainWindow()
 /**
  * @brief MainWindow::init 初始化登陆界面，并创建login_page，lesson_manage_page槽之间的逻辑连接
  */
-void MainWindow::init()
+void student_manage_page::init()
 {
     login.show();//显示登录界面
     set_content();
@@ -51,7 +51,7 @@ void MainWindow::init()
  * @brief MainWindow::do_process_login_request 响应登录信号
  * @param user_name
  */
-void MainWindow::do_process_login_request(QString user_name)
+void student_manage_page::do_process_login_request(QString user_name)
 {
 
     login.close();
@@ -59,7 +59,7 @@ void MainWindow::do_process_login_request(QString user_name)
     this->show();
 }
 
-void MainWindow::on_btn_exit_clicked()
+void student_manage_page::on_btn_exit_clicked()
 {
     exit(0);
 }
@@ -67,7 +67,7 @@ void MainWindow::on_btn_exit_clicked()
 /**
  * @brief MainWindow::on_btn_relogin_clicked 重新登录按钮，退出主界面，打开登录界面
  */
-void MainWindow::on_btn_relogin_clicked()
+void student_manage_page::on_btn_relogin_clicked()
 {
     login.show();
     this->hide();
@@ -76,7 +76,7 @@ void MainWindow::on_btn_relogin_clicked()
 /**
  * @brief MainWindow::set_content 整理QTreeWidget窗口
  */
-void MainWindow::set_content()
+void student_manage_page::set_content()
 {
     ui->content->clear();
     ui->content->setSelectionMode(QAbstractItemView::MultiSelection);
@@ -85,7 +85,7 @@ void MainWindow::set_content()
 }
 
 
-void MainWindow::on_turn2lesson_manage_clicked()
+void student_manage_page::on_turn2lesson_manage_clicked()
 {
     this->hide();
     lesson_manage.show();
@@ -94,7 +94,7 @@ void MainWindow::on_turn2lesson_manage_clicked()
 /**
  * @brief MainWindow::do_process_turn_back_request 响应回到学生管理页面的事件，显示学生管理页面
  */
-void MainWindow::do_process_turn_back_request()
+void student_manage_page::do_process_turn_back_request()
 {
     refresh();
     show();
@@ -103,7 +103,7 @@ void MainWindow::do_process_turn_back_request()
 /**
  * @brief MainWindow::on_add_stu_clicked
  */
-void MainWindow::on_add_stu_btn_clicked()
+void student_manage_page::on_add_stu_btn_clicked()
 {
     sql_server.add_student();
 }
@@ -111,7 +111,7 @@ void MainWindow::on_add_stu_btn_clicked()
 /**
  * @brief MainWindow::on_del_stu_clicked 删除一个学生
  */
-void MainWindow::on_del_btn_clicked()
+void student_manage_page::on_del_btn_clicked()
 {
     QList<QTreeWidgetItem*> selectedItems=ui->content->selectedItems();
     foreach (QTreeWidgetItem *item, selectedItems) {
@@ -132,7 +132,7 @@ void MainWindow::on_del_btn_clicked()
 /**
  * @brief MainWindow::on_find_stu_clicked 查找学生
  */
-void MainWindow::on_find_stu_btn_clicked()
+void student_manage_page::on_find_stu_btn_clicked()
 {
     if(ui->search_bar_stu->isModified())//有输入
     {
@@ -149,7 +149,7 @@ void MainWindow::on_find_stu_btn_clicked()
  * @param item 被编辑的项
  * @param col 该项所在的列
  */
-void MainWindow::qtreewidget_open_editor(QTreeWidgetItem *item, int col)
+void student_manage_page::qtreewidget_open_editor(QTreeWidgetItem *item, int col)
 {
     if(col!=1&&col!=3)//不能修改学号和优良等级，前者只能在创建时指定，后者由系统自动计算
         ui->content->openPersistentEditor(item,col);
@@ -158,7 +158,7 @@ void MainWindow::qtreewidget_open_editor(QTreeWidgetItem *item, int col)
 /**
  * @brief MainWindow::qtreewidget_close_editor 结束编辑并保存更改
  */
-void MainWindow::qtreewidget_close_editor(QTreeWidgetItem *item,int col)
+void student_manage_page::qtreewidget_close_editor(QTreeWidgetItem *item,int col)
 {
     if(item!=NULL)
     {
@@ -179,14 +179,14 @@ void MainWindow::qtreewidget_close_editor(QTreeWidgetItem *item,int col)
 /**
  * @brief MainWindow::refresh 刷新
  */
-void MainWindow::refresh()
+void student_manage_page::refresh()
 {
     sql_server.calc_performance();
     set_content();
 }
 
 
-void MainWindow::on_add_grade_btn_clicked()
+void student_manage_page::on_add_grade_btn_clicked()
 {
     sql_server.add_grade();
 }
@@ -194,7 +194,7 @@ void MainWindow::on_add_grade_btn_clicked()
 /**
  * @brief MainWindow::on_read_file_btn_clicked 唤起一个file browser页面来读取文件
  */
-void MainWindow::on_read_file_btn_clicked()
+void student_manage_page::on_read_file_btn_clicked()
 {
     my_browser=new file_browser();
     connect(my_browser,SIGNAL(send_file_read_signal()),this,SLOT(refresh()));

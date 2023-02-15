@@ -10,55 +10,10 @@
  Target Server Version : 3030001
  File Encoding         : 65001
 
- Date: 31/01/2023 12:47:43
+ Date: 31/01/2023 15:41:00
 */
 
 PRAGMA foreign_keys = false;
-
--- ----------------------------
--- Table structure for _grade_old_20230129
--- ----------------------------
-DROP TABLE IF EXISTS "_grade_old_20230129";
-CREATE TABLE "_grade_old_20230129" (
-  "stud_id" INTEGER(6) NOT NULL,
-  "lesson_id" INTEGER NOT NULL,
-  "stu_name" TEXT,
-  "lesson_name" TEXT,
-  "grade" real,
-  "createDT" blob,
-  CONSTRAINT " lesson_id" FOREIGN KEY ("lesson_id") REFERENCES "lesson_info" ("lesson_id") ON DELETE SET NULL ON UPDATE NO ACTION,
-  CONSTRAINT "stud_id" FOREIGN KEY ("stud_id") REFERENCES "student_info" ("stud_id") ON DELETE SET NULL ON UPDATE NO ACTION
-);
-
--- ----------------------------
--- Table structure for _grade_old_20230130
--- ----------------------------
-DROP TABLE IF EXISTS "_grade_old_20230130";
-CREATE TABLE "_grade_old_20230130" (
-  "stud_id" INTEGER(6) NOT NULL,
-  "lesson_id" INTEGER NOT NULL,
-  "stu_name" TEXT,
-  "lesson_name" TEXT,
-  "grade" real,
-  "createDT" blob,
-  "grade_id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-  CONSTRAINT " lesson_id" FOREIGN KEY ("lesson_id") REFERENCES "lesson_info" ("lesson_id") ON DELETE SET NULL ON UPDATE NO ACTION,
-  CONSTRAINT "stud_id" FOREIGN KEY ("stud_id") REFERENCES "student_info" ("stud_id") ON DELETE SET NULL ON UPDATE NO ACTION
-);
-
--- ----------------------------
--- Table structure for _grade_old_20230131
--- ----------------------------
-DROP TABLE IF EXISTS "_grade_old_20230131";
-CREATE TABLE "_grade_old_20230131" (
-  "stud_id" INTEGER(6) NOT NULL,
-  "lesson_id" INTEGER NOT NULL,
-  "stu_name" TEXT,
-  "lesson_name" TEXT,
-  "grade" real,
-  "createDT" blob,
-  "grade_id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT
-);
 
 -- ----------------------------
 -- Table structure for grade
@@ -124,19 +79,8 @@ CREATE TABLE "users" (
   "user_id" text NOT NULL,
   "passwd" TEXT NOT NULL,
   "createDT" blob,
-  "flag" integer(1) NOT NULL,
   PRIMARY KEY ("user_id")
 );
-
--- ----------------------------
--- Auto increment value for _grade_old_20230130
--- ----------------------------
-UPDATE "sqlite_sequence" SET seq = 7 WHERE name = '_grade_old_20230130';
-
--- ----------------------------
--- Auto increment value for _grade_old_20230131
--- ----------------------------
-UPDATE "sqlite_sequence" SET seq = 19 WHERE name = '_grade_old_20230131';
 
 -- ----------------------------
 -- Triggers structure for table grade
