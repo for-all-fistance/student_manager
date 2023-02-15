@@ -9,8 +9,9 @@
 
 #include <QWidget>
 
-namespace Ui {
-class add_lesson;
+namespace Ui
+{
+    class add_lesson;
 }
 
 class add_lesson : public QWidget
@@ -22,7 +23,7 @@ public:
     ~add_lesson();
 
 signals:
-    void send_new_lesson_signal(QString lesson_name,int lesson_id,QString year,QString term);
+    void send_new_lesson_signal(QString lesson_name, int lesson_id, QString year, QString term);
 private slots:
     void on_confirm_btn_clicked();
 

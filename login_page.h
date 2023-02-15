@@ -11,8 +11,9 @@
 #include "ssql.h"
 #include <QWidget>
 
-namespace Ui {
-class login_page;
+namespace Ui
+{
+    class login_page;
 }
 
 class login_page : public QWidget

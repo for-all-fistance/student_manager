@@ -21,15 +21,15 @@ add_score::~add_score()
  */
 void add_score::on_new_score_btn_clicked()
 {
-    if(ui->lesson_name->isModified()&&ui->stud_name->isModified()&&ui->year->isModified()&&ui->score->isModified())
+    if (ui->lesson_name->isModified() && ui->stud_name->isModified() && ui->year->isModified() && ui->score->isModified())
     {
-        emit send_new_score_signal(ui->stud_name->text(),ui->lesson_name->text(),ui->year->text(),ui->term->currentText(),ui->score->text().toFloat());
+        emit send_new_score_signal(ui->stud_name->text(), ui->lesson_name->text(), ui->year->text(), ui->term->currentText(), ui->score->text().toFloat());
         close();
     }
     else
         QMessageBox::critical(this, QObject::tr("not modfied"),
-                              QObject::tr("没有完整的输入，"
-                                          "请输入姓名，课程，学年，学期和成绩来创建一个成绩！"), QMessageBox::Cancel);
+            QObject::tr("没有完整的输入，"
+                "请输入姓名，课程，学年，学期和成绩来创建一个成绩！"), QMessageBox::Cancel);
 }
 
 /**

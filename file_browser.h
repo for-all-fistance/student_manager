@@ -11,8 +11,9 @@
 #include "ssql.h"
 #include <QWidget>
 
-namespace Ui {
-class file_browser;
+namespace Ui
+{
+    class file_browser;
 }
 
 class file_browser : public QWidget

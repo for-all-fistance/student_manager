@@ -35,16 +35,17 @@ void student_manage_page::init()
 {
     login.show();//显示登录界面
     set_content();
-    connect(&login,SIGNAL(send_login_success_signal(QString)),this,SLOT(do_process_login_request(QString)));//收到登陆成功信号,打开主界面
-    connect(&login,SIGNAL(send_login_success_signal(QString)),&lesson_manage,SLOT(do_process_login_request(QString)));
-    connect(&lesson_manage,SIGNAL(send_turn2student_manage_signal()),this,SLOT(do_process_turn_back_request()));
-    connect(&sql_server,SIGNAL(send_student_added_signal()),this,SLOT(refresh()));//当数据发生变化时，刷新页面
-    connect(&sql_server,SIGNAL(send_grade_added_signal()),this,SLOT(refresh()));
-    connect(&sql_server,SIGNAL(send_lesson_added_signal()),this,SLOT(refresh()));
-    connect(ui->content,SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
-            this,SLOT(qtreewidget_open_editor(QTreeWidgetItem*,int)));//双击编辑
-    connect(ui->content,SIGNAL(itemChanged(QTreeWidgetItem*,int)),this,SLOT(qtreewidget_close_editor(QTreeWidgetItem*,int)));//确认编辑
-
+    connect(&login, SIGNAL(send_login_success_signal(QString)), this,
+        SLOT(do_process_login_request(QString))); //收到登陆成功信号,打开主界面
+    connect(&login, SIGNAL(send_login_success_signal(QString)), &lesson_manage, SLOT(do_process_login_request(QString)));
+    connect(&lesson_manage, SIGNAL(send_turn2student_manage_signal()), this, SLOT(do_process_turn_back_request()));
+    connect(&sql_server, SIGNAL(send_student_added_signal()), this, SLOT(refresh())); //当数据发生变化时，刷新页面
+    connect(&sql_server, SIGNAL(send_grade_added_signal()), this, SLOT(refresh()));
+    connect(&sql_server, SIGNAL(send_lesson_added_signal()), this, SLOT(refresh()));
+    connect(ui->content, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)),
+        this, SLOT(qtreewidget_open_editor(QTreeWidgetItem *, int))); //双击编辑
+    connect(ui->content, SIGNAL(itemChanged(QTreeWidgetItem *, int)), this, SLOT(qtreewidget_close_editor(QTreeWidgetItem *,
+                int))); //确认编辑
 }
 
 /**
@@ -53,7 +54,6 @@ void student_manage_page::init()
  */
 void student_manage_page::do_process_login_request(QString user_name)
 {
-
     login.close();
     ui->username_main->setText(user_name);
     this->show();
@@ -113,17 +113,19 @@ void student_manage_page::on_add_stu_btn_clicked()
  */
 void student_manage_page::on_del_btn_clicked()
 {
-    QList<QTreeWidgetItem*> selectedItems=ui->content->selectedItems();
-    foreach (QTreeWidgetItem *item, selectedItems) {
-        switch (item->type()) {
-        case STUDENT:
-            sql_server.delete_student(item->text(1).toInt());
-            break;
-        case GRADE:
-            sql_server.delete_grade(item->parent()->text(0),item->text(0),item->text(2),item->text(3));
-            break;
-        default:
-            break;
+    QList<QTreeWidgetItem *> selectedItems = ui->content->selectedItems();
+    foreach (QTreeWidgetItem *item, selectedItems)
+    {
+        switch (item->type())
+        {
+            case STUDENT:
+                sql_server.delete_student(item->text(1).toInt());
+                break;
+            case GRADE:
+                sql_server.delete_grade(item->parent()->text(0), item->text(0), item->text(2), item->text(3));
+                break;
+            default:
+                break;
         }
     }
     refresh();
@@ -134,14 +136,16 @@ void student_manage_page::on_del_btn_clicked()
  */
 void student_manage_page::on_find_stu_btn_clicked()
 {
-    if(ui->search_bar_stu->isModified())//有输入
+    if (ui->search_bar_stu->isModified()) //有输入
     {
         ui->content->clear();
-        sql_server.search_for_student(ui->search_bar_stu->text(),ui->content);
+        sql_server.search_for_student(ui->search_bar_stu->text(), ui->content);
         ui->content->update();
     }
     else
+    {
         refresh();
+    }
 }
 
 /**
@@ -151,28 +155,31 @@ void student_manage_page::on_find_stu_btn_clicked()
  */
 void student_manage_page::qtreewidget_open_editor(QTreeWidgetItem *item, int col)
 {
-    if(col!=1&&col!=3)//不能修改学号和优良等级，前者只能在创建时指定，后者由系统自动计算
-        ui->content->openPersistentEditor(item,col);
+    if (col != 1 && col != 3) //不能修改学号和优良等级，前者只能在创建时指定，后者由系统自动计算
+    {
+        ui->content->openPersistentEditor(item, col);
+    }
 }
 
 /**
  * @brief MainWindow::qtreewidget_close_editor 结束编辑并保存更改
  */
-void student_manage_page::qtreewidget_close_editor(QTreeWidgetItem *item,int col)
+void student_manage_page::qtreewidget_close_editor(QTreeWidgetItem *item, int col)
 {
-    if(item!=NULL)
+    if (item != NULL)
     {
-       ui->content->closePersistentEditor(item,col);
-       switch (item->type()) {
-       case STUDENT:
-           sql_server.update(item->text(0),item->text(1).toInt(),item->text(2));
-           break;
-       case GRADE:
-           sql_server.update(item->parent()->text(0),item->text(0),item->text(1).toFloat());
-           break;
-       default:
-           break;
-       }
+        ui->content->closePersistentEditor(item, col);
+        switch (item->type())
+        {
+            case STUDENT:
+                sql_server.update(item->text(0), item->text(1).toInt(), item->text(2));
+                break;
+            case GRADE:
+                sql_server.update(item->parent()->text(0), item->text(0), item->text(1).toFloat());
+                break;
+            default:
+                break;
+        }
     }
 }
 
@@ -196,7 +203,7 @@ void student_manage_page::on_add_grade_btn_clicked()
  */
 void student_manage_page::on_read_file_btn_clicked()
 {
-    my_browser=new file_browser();
-    connect(my_browser,SIGNAL(send_file_read_signal()),this,SLOT(refresh()));
+    my_browser = new file_browser();
+    connect(my_browser, SIGNAL(send_file_read_signal()), this, SLOT(refresh()));
 }
 

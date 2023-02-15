@@ -13,8 +13,9 @@
 #include "global.h"
 #include "ssql.h"
 
-namespace Ui {
-class lesson_manage_page;
+namespace Ui
+{
+    class lesson_manage_page;
 }
 
 class lesson_manage_page : public QWidget
@@ -39,7 +40,7 @@ private slots:
 
     void on_find_stu_clicked();
 
-    void show_lesson_summery(QTreeWidgetItem* my_lesson);
+    void show_lesson_summery(QTreeWidgetItem *my_lesson);
 
     void on_add_lesson_btn_clicked();
 
@@ -48,7 +49,7 @@ private slots:
     void refresh();
 
     void qtreewidget_open_editor(QTreeWidgetItem *item, int col);
-    void qtreewidget_close_editor(QTreeWidgetItem *item,int col);
+    void qtreewidget_close_editor(QTreeWidgetItem *item, int col);
 
     void on_read_file_btn_clicked();
 

@@ -7,7 +7,7 @@
 #ifndef GLOBAL_H
 #define GLOBAL_H
 
-enum{STUDENT,LESSON,GRADE};
+enum {STUDENT, LESSON, GRADE};
 
 
 #endif // GLOBAL_H

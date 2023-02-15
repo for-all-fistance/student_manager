@@ -9,8 +9,9 @@
 
 #include <QWidget>
 
-namespace Ui {
-class add_student;
+namespace Ui
+{
+    class add_student;
 }
 
 class add_student : public QWidget
@@ -27,10 +28,10 @@ private slots:
     void on_cancel_btn_clicked();
 
 signals:
-    void send_new_student_signal(int stud_id,QString stu_name,QString _class);
+    void send_new_student_signal(int stud_id, QString stu_name, QString _class);
 private:
     Ui::add_student *ui;
-    int score_count=0;
+    int score_count = 0;
 };
 
 #endif // ADD_STUDENT_H

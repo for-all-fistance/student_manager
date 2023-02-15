@@ -27,18 +27,18 @@ add_lesson::~add_lesson()
  */
 void add_lesson::on_confirm_btn_clicked()
 {
-    if(ui->lesson_id->isModified()&&ui->lesson_name->isModified()&&ui->year->isModified())
+    if (ui->lesson_id->isModified() && ui->lesson_name->isModified() && ui->year->isModified())
     {
         emit send_new_lesson_signal(ui->lesson_name->text(),
-                               ui->lesson_id->text().toInt(),
-                               ui->year->text(),
-                               ui->term->currentText());
+            ui->lesson_id->text().toInt(),
+            ui->year->text(),
+            ui->term->currentText());
     }
     else
     {
         QMessageBox::critical(this, QObject::tr("not modified"),
             QObject::tr("没有完整的输入\n"
-                        "要新建课程至少需要名称，课程号，学年和学期！\n"), QMessageBox::Cancel);
+                "要新建课程至少需要名称，课程号，学年和学期！\n"), QMessageBox::Cancel);
     }
 }
 

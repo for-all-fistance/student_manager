@@ -1,4 +1,4 @@
-/******************************************************************************
+﻿/******************************************************************************
   * @file    mainwindow.h
   * @author  Jialiang Li
   * @brief   class: MainWindow
@@ -14,7 +14,10 @@
 #include <QMainWindow>
 
 QT_BEGIN_NAMESPACE
-namespace Ui { class MainWindow; }
+namespace Ui
+{
+    class MainWindow;
+}
 QT_END_NAMESPACE
 
 class student_manage_page : public QMainWindow
@@ -37,8 +40,8 @@ private slots:
 
     void on_find_stu_btn_clicked();
 
-    void qtreewidget_open_editor(QTreeWidgetItem *item,int col);
-    void qtreewidget_close_editor(QTreeWidgetItem* item,int col);
+    void qtreewidget_open_editor(QTreeWidgetItem *item, int col);
+    void qtreewidget_close_editor(QTreeWidgetItem *item, int col);
     void refresh();
 
     void on_del_btn_clicked();
