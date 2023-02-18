@@ -163,7 +163,7 @@ int sSql::find_lesson(QString lesson_name, QString year, QString term)
                 "\nClick Cancel to exit."), QMessageBox::Cancel);
         return -1;
     }
-    else if (query.first())
+    else if (query.next())
     {
         qDebug() << "lesson found!";
         int stu_id = query.value("lesson_id").toInt();
@@ -193,11 +193,15 @@ int sSql::find_lesson(QString lesson_name)
                 "\nClick Cancel to exit."), QMessageBox::Cancel);
         return -1;
     }
-    else if (query.first())
+    else if (query.next())
     {
         qDebug() << "lesson found!";
         int lesson_id = query.value("lesson_id").toInt();
         return lesson_id;
+    }
+    else
+    {
+        return -1;
     }
 }
 
@@ -1109,28 +1113,13 @@ void sSql::try_delete_grade(QString stu_name, QString lesson_name)
  * @param stu_name
  * @param stud_id
  * @param _class
- * @param performance
  * @return true for sucsess
  */
 bool sSql::update(QString stu_name, int stud_id, QString _class)
 {
-    QSqlQuery query(mydb);// 用于执行sql语句的对象
-    query.prepare("UPDATE student_info SET stu_name=:stu_name,class=:class WHERE stud_id=:stud_id");//要执行的sql语句
-    query.bindValue(":stu_name", stu_name);
-    query.bindValue(":class", _class);
-    query.bindValue(":stud_id", stud_id);
-    if (!query.exec())
-    {
-        QMessageBox::critical(nullptr, QString("sql error"),
-            QString("Error: fail to update." + query.lastError().text() +
-                "\nClick Cancel to exit."), QMessageBox::Cancel);
-        return false;
-    }
-    else
-    {
-        emit send_item_changed_signal();
-        return true;
-    }
+    bool success = add_student_base(stud_id, stu_name, _class);
+    calc_performance(stud_id);
+    return success;
 }
 
 /**
@@ -1144,27 +1133,10 @@ bool sSql::update(QString stu_name, int stud_id, QString _class)
  */
 bool sSql::update(int stud_id, int lesson_id, QString stu_name, QString lesson_name, float grade)
 {
-    QSqlQuery query(mydb);// 用于执行sql语句的对象
-    query.prepare("UPDATE grade SET stu_name=:stu_name,lesson_name=:lesson_name,grade=:grade WHERE stud_id=:stud_id AND lesson_id=:lesson_id");//要执行的sql语句
-    query.bindValue(":stu_name", stu_name);
-    query.bindValue(":lesson_name", lesson_name);
-    query.bindValue(":grade", grade);
-    query.bindValue(":stud_id", stud_id);
-    query.bindValue(":lesson_id", lesson_id);
-    if (!query.exec())
-    {
-        QMessageBox::critical(nullptr, QString("sql error"),
-            QString("Error: fail to update." + query.lastError().text() +
-                "\nClick Cancel to exit."), QMessageBox::Cancel);
-        return false;
-    }
-    else
-    {
-        calc_performance(stud_id);//需要重新计算平均分和优良程度
-        calc_lesson_summery(lesson_id);
-        emit send_item_changed_signal();
-        return true;
-    }
+    bool success = add_grade_base(stud_id, lesson_id, stu_name, lesson_name, grade);
+    calc_performance(stud_id);//需要重新计算平均分和优良程度
+    calc_lesson_summery(lesson_id);
+    return success;
 }
 
 /**
@@ -1178,44 +1150,12 @@ bool sSql::update(int stud_id, int lesson_id, QString stu_name, QString lesson_n
  */
 bool sSql::update(QString stu_name, QString lesson_name, float grade)
 {
-    QSqlQuery query(mydb);// 用于执行sql语句的对象
-    query.prepare("UPDATE grade SET stu_name=:stu_name,grade=:grade,lesson_name=:lesson_name WHERE stud_id=:stud_id AND lesson_id=:lesson_id");//要执行的sql语句
-    query.bindValue(":stu_name", stu_name);
-    query.bindValue(":lesson_name", lesson_name);
-    query.bindValue(":grade", grade);
-    //为确保修改后的数据正常，需要保证修改后的学生和课程已经存在
     int stud_id = find_student(stu_name);
-    if (stud_id == -1)
-    {
-        QMessageBox::critical(nullptr, QObject::tr("无效"),
-            QObject::tr("学生不存在，请检查后重新修改！"
-                "Click Cancel to exit."), QMessageBox::Cancel);
-        return false;
-    }
-    query.bindValue(":stud_id", stud_id);
     int lesson_id = find_lesson(lesson_name);
-    if (lesson_id == -1)
-    {
-        QMessageBox::critical(nullptr, QObject::tr("无效"),
-            QObject::tr("课程不存在，请检查后重新修改！"
-                "Click Cancel to exit."), QMessageBox::Cancel);
-        return false;
-    }
-    query.bindValue(":lesson_id", lesson_id);
-    if (!query.exec())
-    {
-        QMessageBox::critical(nullptr, QString("sql error"),
-            QString("Error: fail to update." + query.lastError().text() +
-                "\nClick Cancel to exit."), QMessageBox::Cancel);
-        return false;
-    }
-    else
-    {
-        calc_performance();//需要重新计算平均分和优良程度
-        calc_lesson_summery(lesson_id);
-        emit send_item_changed_signal();
-        return true;
-    }
+    bool success = add_grade_base(stud_id, lesson_id, stu_name, lesson_name, grade);
+    calc_performance();//需要重新计算平均分和优良程度
+    calc_lesson_summery(lesson_id);
+    return success;
 }
 
 /**
@@ -1228,24 +1168,9 @@ bool sSql::update(QString stu_name, QString lesson_name, float grade)
  */
 bool sSql::update(int lesson_id, QString lesson_name, QString year, QString term)
 {
-    QSqlQuery query(mydb);// 用于执行sql语句的对象
-    query.prepare("UPDATE lesson_info SET lesson_name=:lesson_name,year=:year,term=:term WHERE lesson_id=:lesson_id");//要执行的sql语句
-    query.bindValue(":lesson_name", lesson_name);
-    query.bindValue(":year", year);
-    query.bindValue(":term", term);
-    query.bindValue(":lesson_id", lesson_id);
-    if (!query.exec())
-    {
-        QMessageBox::critical(nullptr, QString("sql error"),
-            QString("Error: fail to update." + query.lastError().text() +
-                "\nClick Cancel to exit."), QMessageBox::Cancel);
-        return false;
-    }
-    else
-    {
-        emit send_item_changed_signal();
-        return true;
-    }
+    bool success = add_lesson_base(lesson_name, lesson_id, year, term);
+    calc_lesson_summery(lesson_id);
+    return success;
 }
 
 /**

@@ -16,7 +16,6 @@
 #include <qmessagebox.h>
 #include "qtreewidget.h"
 
-
 class sSql : public QObject
 {
     Q_OBJECT

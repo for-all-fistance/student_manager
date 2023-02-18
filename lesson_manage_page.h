@@ -48,6 +48,7 @@ private:
     void set_content();
     file_browser *my_browser;
     sSql sql_server;
+    bool isediting;
 };
 
 #endif // LESSON_MANAGE_PAGE_H

@@ -28,6 +28,7 @@ lesson_manage_page::~lesson_manage_page()
  */
 void lesson_manage_page::init()
 {
+    isediting = false;
     set_content();//显示列表
     connect(&sql_server, SIGNAL(send_student_added_signal()), this, SLOT(refresh())); //当数据发生变化时，刷新页面
     connect(&sql_server, SIGNAL(send_grade_added_signal()), this, SLOT(refresh()));
@@ -154,6 +155,7 @@ void lesson_manage_page::on_del_btn_clicked()
                 break;
         }
     }
+    refresh();
 }
 
 /**
@@ -170,6 +172,7 @@ void lesson_manage_page::on_del_btn_clicked()
 void lesson_manage_page::qtreewidget_open_editor(QTreeWidgetItem *item, int col)
 {
     ui->content->openPersistentEditor(item, col);
+    isediting = true;
 }
 
 /**
@@ -179,7 +182,7 @@ void lesson_manage_page::qtreewidget_open_editor(QTreeWidgetItem *item, int col)
  */
 void lesson_manage_page::qtreewidget_close_editor(QTreeWidgetItem *item, int col)
 {
-    if (item != NULL)
+    if (item != NULL && isediting)
     {
         ui->content->closePersistentEditor(item, col);
         switch (item->type())
@@ -196,6 +199,7 @@ void lesson_manage_page::qtreewidget_close_editor(QTreeWidgetItem *item, int col
             default:
                 break;
         }
+        isediting = false;
     }
 }
 

@@ -1,7 +1,7 @@
 ﻿/******************************************************************************
-  * @file    mainwindow.cpp
+  * @file    student_manage_page.cpp
   * @author  Jialiang Li
-  * @brief   member function of class MainWindow,including the main window UI and
+  * @brief   member function of class student_manage_page,including the student manage UI
   *
 */
 #pragma execution_character_set("utf-8")
@@ -29,21 +29,18 @@ student_manage_page::~student_manage_page()
 }
 
 /**
- * @brief MainWindow::init 初始化登陆界面，并创建login_page，lesson_manage_page槽之间的逻辑连接
+ * @brief student_manage_page::init 初始化登陆界面
  */
 void student_manage_page::init()
 {
+    isediting = false;
     login = new login_page; //创建登录页面
     connect(login, SIGNAL(send_login_success_signal()), this,
         SLOT(do_process_login_request())); //若收到登陆成功信号,打开主界面
-    connect(ui->content, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)),
-        this, SLOT(qtreewidget_open_editor(QTreeWidgetItem *, int))); //双击编辑
-    connect(ui->content, SIGNAL(itemChanged(QTreeWidgetItem *, int)), this, SLOT(qtreewidget_close_editor(QTreeWidgetItem *,
-                int))); //确认编辑
 }
 
 /**
- * @brief MainWindow::do_process_login_request 响应登录信号
+ * @brief student_manage_page::do_process_login_request 响应登录信号
  * @param user_name
  */
 void student_manage_page::do_process_login_request()
@@ -54,6 +51,10 @@ void student_manage_page::do_process_login_request()
     connect(sql_server, SIGNAL(send_student_added_signal()), this, SLOT(refresh())); //当数据发生变化时，刷新页面
     connect(sql_server, SIGNAL(send_grade_added_signal()), this, SLOT(refresh()));
     connect(sql_server, SIGNAL(send_lesson_added_signal()), this, SLOT(refresh()));
+    connect(ui->content, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)),
+        this, SLOT(qtreewidget_open_editor(QTreeWidgetItem *, int))); //双击编辑
+    connect(ui->content, SIGNAL(itemChanged(QTreeWidgetItem *, int)), this, SLOT(qtreewidget_close_editor(QTreeWidgetItem *,
+                int))); //确认编辑
     this->show();
 }
 
@@ -63,7 +64,7 @@ void student_manage_page::on_btn_exit_clicked()
 }
 
 /**
- * @brief MainWindow::on_btn_relogin_clicked 重新登录按钮，退出主界面，打开登录界面
+ * @brief student_manage_page::on_btn_relogin_clicked 重新登录按钮，退出主界面，打开登录界面
  */
 void student_manage_page::on_btn_relogin_clicked()
 {
@@ -74,7 +75,7 @@ void student_manage_page::on_btn_relogin_clicked()
 }
 
 /**
- * @brief MainWindow::set_content 整理QTreeWidget窗口
+ * @brief student_manage_page::set_content 整理QTreeWidget窗口
  */
 void student_manage_page::set_content()
 {
@@ -96,7 +97,7 @@ void student_manage_page::on_turn2lesson_manage_clicked()
 }
 
 /**
- * @brief MainWindow::do_process_turn_back_request 响应回到学生管理页面的事件，显示学生管理页面
+ * @brief student_manage_page::do_process_turn_back_request 响应回到学生管理页面的事件，显示学生管理页面
  */
 void student_manage_page::do_process_turn_back_request()
 {
@@ -107,7 +108,7 @@ void student_manage_page::do_process_turn_back_request()
 }
 
 /**
- * @brief MainWindow::on_add_stu_clicked
+ * @brief student_manage_page::on_add_stu_clicked
  */
 void student_manage_page::on_add_stu_btn_clicked()
 {
@@ -115,7 +116,7 @@ void student_manage_page::on_add_stu_btn_clicked()
 }
 
 /**
- * @brief MainWindow::on_del_stu_clicked 删除一个学生
+ * @brief student_manage_page::on_del_stu_clicked 删除一个学生
  */
 void student_manage_page::on_del_btn_clicked()
 {
@@ -138,7 +139,7 @@ void student_manage_page::on_del_btn_clicked()
 }
 
 /**
- * @brief MainWindow::on_find_stu_clicked 查找学生
+ * @brief student_manage_page::on_find_stu_clicked 查找学生
  */
 void student_manage_page::on_find_stu_btn_clicked()
 {
@@ -156,21 +157,22 @@ void student_manage_page::on_find_stu_btn_clicked()
 }
 
 /**
- * @brief MainWindow::qtreewidget_open_editor 双击编辑
+ * @brief student_manage_page::qtreewidget_open_editor 双击编辑
  * @param item 被编辑的项
  * @param col 该项所在的列
  */
 void student_manage_page::qtreewidget_open_editor(QTreeWidgetItem *item, int col)
 {
     ui->content->openPersistentEditor(item, col);
+    isediting = true;
 }
 
 /**
- * @brief MainWindow::qtreewidget_close_editor 结束编辑并保存更改
+ * @brief student_manage_page::qtreewidget_close_editor 结束编辑并保存更改
  */
 void student_manage_page::qtreewidget_close_editor(QTreeWidgetItem *item, int col)
 {
-    if (item != NULL)
+    if (item != NULL && isediting)
     {
         ui->content->closePersistentEditor(item, col);
         switch (item->type())
@@ -187,11 +189,12 @@ void student_manage_page::qtreewidget_close_editor(QTreeWidgetItem *item, int co
             default:
                 break;
         }
+        isediting = false;
     }
 }
 
 /**
- * @brief MainWindow::refresh 刷新
+ * @brief student_manage_page::refresh 刷新
  */
 void student_manage_page::refresh()
 {
@@ -206,7 +209,7 @@ void student_manage_page::on_add_grade_btn_clicked()
 }
 
 /**
- * @brief MainWindow::on_read_file_btn_clicked 唤起一个file browser页面来读取文件
+ * @brief student_manage_page::on_read_file_btn_clicked 唤起一个file browser页面来读取文件
  */
 void student_manage_page::on_read_file_btn_clicked()
 {

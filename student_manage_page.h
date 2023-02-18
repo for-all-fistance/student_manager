@@ -51,5 +51,6 @@ private:
     lesson_manage_page *lesson_manage;
     file_browser *my_browser;
     sSql *sql_server;
+    bool isediting;
 };
 #endif // STUDENT_MANAGE_PAGE_H

@@ -5,7 +5,6 @@
   *
 */
 #include "student_manage_page.h"
-#include "file_browser.h"
 #include <QApplication>
 
 int main(int argc, char *argv[])
