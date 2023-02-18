@@ -13,7 +13,7 @@
 #include "add_lesson.h"
 
 /**
- * @brief size 获得一个QSqlQuery中数据的条数
+ * @brief size 计算一个QSqlQuery中数据的条数
  * @param q query to search
  * @return
  */
