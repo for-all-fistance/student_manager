@@ -33,6 +33,7 @@ void add_lesson::on_confirm_btn_clicked()
             ui->lesson_id->text().toInt(),
             ui->year->text(),
             ui->term->currentText());
+        close();
     }
     else
     {

@@ -17,11 +17,9 @@ namespace Ui
 class add_score : public QWidget
 {
     Q_OBJECT
-
 public:
     explicit add_score(QWidget *parent = nullptr);
     ~add_score();
-
 private slots:
     void on_new_score_btn_clicked();
     void on_cancel_clicked();

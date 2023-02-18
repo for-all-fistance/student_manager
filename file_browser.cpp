@@ -34,8 +34,10 @@ void file_browser::init()
     model->setNameFilterDisables(false);
     model->setNameFilters(nameFilter);
     model->setRootPath("C:");
+    //model->setRootPath(QDir::currentPath());
     ui->my_tree->setModel(model);
     ui->my_tree->setRootIndex(model->index("C:"));
+    //ui->my_tree->setRootIndex(model->index(QDir::currentPath()));
     setWindowTitle("file browser");
     show();
 }
@@ -72,13 +74,12 @@ bool file_browser::read(QString path)
     QFile file(path);
     if (file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
+        sql_server = new sSql();
         QTextStream stream(&file);
         stream.setCodec("utf-8");//设置读取文本的编码格式为UTF-8
         while (!stream.atEnd())
         {
             QString line = stream.readLine();
-            //qDebug()<<line;
-            sql_server = new sSql();
             if (!sql_server->process_line(line))
             {
                 QMessageBox::critical(this, QObject::tr("snytex error"),

@@ -29,11 +29,11 @@ private slots:
     void on_btn_quit_clicked();
 
 signals:
-    void send_login_success_signal(QString user_name);
+    void send_login_success_signal();
 
 private:
     Ui::login_page *ui;
-    sSql sql_server;
+    sSql *sql_server;
     bool try_login();
 };
 

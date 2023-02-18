@@ -22,6 +22,7 @@ class sSql : public QObject
     Q_OBJECT
 public:
     explicit sSql(QObject *parent = nullptr);
+    ~sSql();
     bool read_all_student(QTreeWidget *content);
     bool read_all_lesson(QTreeWidget *content);
     bool calc_performance();
@@ -35,7 +36,7 @@ public:
     bool add_lesson();
     bool check_passwd(QString user_name, QString passwd);
     bool delete_grade(int stud_id, int lesson_id);
-    bool delete_grade(QString stu_name, QString lesson_name, QString year, QString term);
+    bool delete_grade(QString stu_name, QString lesson_name);
     bool delete_lesson(int lesson_id);
     bool delete_lesson(QString lesson_name, QString year, QString term);
     bool delete_student(int stud_id);
@@ -68,6 +69,7 @@ signals:
     void send_grade_deleted_signal();
     void send_lesson_deleted_signal();
     void send_lesson_added_signal();
+    void send_item_changed_signal();
 
 private slots:
     void try_add_student(int stud_id, QString stu_name, QString _class);
@@ -76,7 +78,8 @@ private slots:
     void try_delete_student(int stud_id);
     void try_delete_student(QString stu_name);
     void try_delete_grade(int stud_id, int lesson_id);
-    void try_delete_grade(QString stu_name, QString lesson_name, QString year, QString term);
+    void try_delete_grade(QString stu_name, QString lesson_name);
+private:
 
 };
 

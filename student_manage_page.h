@@ -34,28 +34,22 @@ private slots:
     void set_content();
     void on_turn2lesson_manage_clicked();
     void do_process_turn_back_request();
-    void do_process_login_request(QString user_name);
-
+    void do_process_login_request();
     void on_add_stu_btn_clicked();
-
     void on_find_stu_btn_clicked();
-
     void qtreewidget_open_editor(QTreeWidgetItem *item, int col);
     void qtreewidget_close_editor(QTreeWidgetItem *item, int col);
     void refresh();
-
     void on_del_btn_clicked();
-
     void on_add_grade_btn_clicked();
-
     void on_read_file_btn_clicked();
 
 private:
     Ui::MainWindow *ui;
     void init();
-    login_page login;
-    lesson_manage_page lesson_manage;
+    login_page *login;
+    lesson_manage_page *lesson_manage;
     file_browser *my_browser;
-    sSql sql_server;
+    sSql *sql_server;
 };
 #endif // STUDENT_MANAGE_PAGE_H

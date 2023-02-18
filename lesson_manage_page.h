@@ -28,31 +28,17 @@ public:
 
 private slots:
     void on_turn2student_manage_clicked();
-
     void do_process_turn2student_manage_signal();
-
-    void do_process_login_request(QString user_name);
-
     void on_btn_exit_clicked();
-
-
     void on_add_score_btn_clicked();
-
-    void on_find_stu_clicked();
-
+    void on_find_lesson_clicked();
     void show_lesson_summery(QTreeWidgetItem *my_lesson);
-
     void on_add_lesson_btn_clicked();
-
     void on_del_btn_clicked();
-
     void refresh();
-
     void qtreewidget_open_editor(QTreeWidgetItem *item, int col);
     void qtreewidget_close_editor(QTreeWidgetItem *item, int col);
-
     void on_read_file_btn_clicked();
-
 signals:
     void send_turn2student_manage_signal();
 

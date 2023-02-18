@@ -8,17 +8,21 @@
 
 #include "login_page.h"
 #include "ui_login_page.h"
+#include "global.h"
 
 login_page::login_page(QWidget *parent)
     : QWidget(parent),
       ui(new Ui::login_page)
 {
     ui->setupUi(this);
+    sql_server = new sSql;
+    this->show();
 }
 
 login_page::~login_page()
 {
     delete ui;
+    delete sql_server;
 }
 
 /**
@@ -26,10 +30,12 @@ login_page::~login_page()
  */
 void login_page::on_btn_login_clicked()
 {
+    QString name = ui->login_username->text();
     //如果登录成功，发送成功信号
     if (try_login())
     {
-        emit send_login_success_signal(ui->login_username->text());
+        set_current_user(name);
+        emit send_login_success_signal();
     }
 }
 
@@ -49,5 +55,6 @@ bool login_page::try_login()
 {
     QString name = ui->login_username->text();
     QString passwd = ui->login_passwd->text();
-    return sql_server.check_passwd(name, passwd);
+    return sql_server->check_passwd(name, passwd);
 }
+

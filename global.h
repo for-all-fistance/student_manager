@@ -6,8 +6,10 @@
 */
 #ifndef GLOBAL_H
 #define GLOBAL_H
+#include <QString>
 
 enum {STUDENT, LESSON, GRADE};
-
+extern QString CURRENT_USER;
+void set_current_user(QString user);
 
 #endif // GLOBAL_H
